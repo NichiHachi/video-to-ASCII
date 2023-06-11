@@ -9,7 +9,6 @@ Convert any black and white video into an ascii version.
 3. [Libraries](#libraries)
 
 ## How to use
-***
 1. Put your video in the folder.
 
 2. Run main.exe
@@ -19,7 +18,6 @@ Convert any black and white video into an ascii version.
 Example of rendering : https://youtu.be/N1hLC0iY8EU
 
 ## Accuracies
-***
 The different accuracies based on the 480p video of [Bad Apple!!](https://www.youtube.com/watch?v=FtutLA63Cp8) :
 
 * [Low](https://youtu.be/px1mTmlXyWU)
@@ -37,11 +35,9 @@ The different accuracies based on the 480p video of [Bad Apple!!](https://www.yo
 The higher the ```resolution```, the better the ```accuracy``` but the longer time of render !
 
 ## Characters
-***
 You can add, remove and modify any character in the ```characters``` folder. The only requirements are that they must all be the ```same size``` and the character must be ```in the name```, for exemple "#.jpg".
 
 ## Libraries
-***
 The libraries used within the project:
 * [SLD](https://www.libsdl.org/)
 * [SFML](https://www.sfml-dev.org/index-fr.php)
