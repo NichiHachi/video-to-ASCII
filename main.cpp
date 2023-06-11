@@ -6,12 +6,16 @@
 #include "frame_to_video.hpp"
 #include <filesystem>
 #include <ctime>
+#include <direct.h>
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>       
 #include <opencv2/highgui/highgui.hpp> 
 using namespace std;
 
 int main(int argv, char** args){
+    create_directories("frame_ascii");
+    create_directories("frame_final_product");
+    create_directories("frame_video");
     //Make the list of character matrices
     if(!chara_to_matrice()){
         cout << "The transformation of characters into a matrice has failled...";
