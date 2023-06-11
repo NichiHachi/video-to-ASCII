@@ -18,7 +18,7 @@ vector<vector<char>> image_to_matrice(string path, int dim_image_x, int dim_imag
     for(int i=0;i<y;i++){
         for(int j=0;j<x;j++){
             color = image.getPixel(j,i);
-            if(color.r+color.g+color.b < 550){
+            if(color.r+color.g+color.b < 300){
                 matrice[i][j] = '1';
             }
         }

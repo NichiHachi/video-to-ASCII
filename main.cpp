@@ -75,7 +75,7 @@ int main(int argv, char** args){
 
     int precision;
     cout << "Degree of accuracy" << endl;
-    cout << "1) Low" << endl << "2) Medium (Recommended)" << endl << "3) High" << endl;
+    cout << "1) Low (Recommended for high quality video)" << endl << "2) Medium" << endl << "3) High (Recommended for low quality video)" << endl;
     cout << "Enter a selection: ";
     cin >> precision;
     if(precision<1){

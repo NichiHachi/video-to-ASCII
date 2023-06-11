@@ -44,7 +44,7 @@ void image_to_matrice_txt(path path_character,string name){
         for(int x=0;x<dim.x;x++){
             color = image.getPixel(x,y);
             //If the color is light enough, it is considered a white pixel
-            if(color.r+color.g+color.b >= 550){
+            if(color.r+color.g+color.b >= 150){
                 table << 0;
             }
             //Otherwise it is considered as a black pixel
