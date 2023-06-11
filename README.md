@@ -35,7 +35,7 @@ The different accuracies based on the 480p video of [Bad Apple!!](https://www.yo
 The higher the ```resolution```, the better the ```accuracy``` but the longer time of render !
 
 ## Characters
-You can add, remove and modify any character in the ```characters``` folder. The only requirements are that they must all be the ```same size``` and the character must be ```in the name```, for exemple "#.jpg".
+You can add, remove and modify any character in the ```characters``` folder. The only requirements are that they must all be the same size and the character must be in the name, for example "#.jpg".
 
 ## Libraries
 The libraries used within the project:
