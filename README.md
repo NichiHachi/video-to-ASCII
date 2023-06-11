@@ -5,7 +5,7 @@ Convert any black and white video into an ascii version.
 ## Table of Contents
 1. [Use](#how-to-use-it)
 2. [Accuracies](#accuracies)
-3. [Characters]()
+3. [Characters](#characters)
 3. [Libraries](#libraries)
 
 ## How to use
@@ -36,7 +36,7 @@ The different accuracies based on the 480p video of [Bad Apple!!](https://www.yo
 
 The higher the ```resolution```, the better the ```accuracy``` but the longer time of render !
 
-## Accuracies
+## Characters
 ***
 You can add, remove and modify any character in the ```characters``` folder. The only requirements are that they must all be the ```same size``` and the character must be ```in the name```, for exemple "#.jpg".
 
