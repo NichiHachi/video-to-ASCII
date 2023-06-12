@@ -26,7 +26,7 @@ vector<vector<char>> image_to_matrice(string path, int dim_image_x, int dim_imag
     return matrice;
 }
 
-void comparaison(vector<vector<string>>list_matrice_characters,vector<vector<char>> matrice_image, int dim_image_x, int dim_image_y,int dim_x_chara, int dim_y_chara,string number_frame,int precision){
+void comparaison(vector<vector<string>>list_matrice_characters,vector<vector<char>> matrice_image, int dim_image_x, int dim_image_y,int dim_x_chara, int dim_y_chara,string number_frame,int precision, int color_factor){
     int number_x_box = dim_image_x/dim_x_chara*precision;
     int number_y_box = dim_image_y/dim_y_chara*precision;
     int nbr_charactere = distance(directory_iterator("characters"), directory_iterator{});
@@ -54,11 +54,11 @@ void comparaison(vector<vector<string>>list_matrice_characters,vector<vector<cha
 
                         if(matrice_image[(y_pixel_in_box+y_box*dim_y_chara)/precision][(x_pixel_in_box+x_box*dim_x_chara)/precision]==list_matrice_characters[index_chara][1][y_pixel_in_box*dim_x_chara+x_pixel_in_box]){
                             //If both (x,y) pixel is Black substract 2 to the score and if the pixel is white it's -1.
-                            score-=int(list_matrice_characters[index_chara][1][y_pixel_in_box*dim_x_chara+x_pixel_in_box])-47; 
+                            score+=(int(list_matrice_characters[index_chara][1][y_pixel_in_box*dim_x_chara+x_pixel_in_box])-47)*color_factor; 
                         }
                         else{
                             //If the (x,y) pixel is black on one and the other it's white, add 2 to the score.
-                            score+=2;
+                            score-=2*color_factor;
                         }
                         if(score+(dim_x_chara*(dim_y_chara-y_pixel_in_box-1)+dim_x_chara-1-x_pixel_in_box)*2<max_score){
                             can_have_better_score = false;
@@ -84,7 +84,7 @@ void comparaison(vector<vector<string>>list_matrice_characters,vector<vector<cha
     matrice_image.clear();
 }
 
-int ascii_transform(string path, vector<vector<string>> list_matrice_characters, int precision){
+int ascii_transform(string path, vector<vector<string>> list_matrice_characters, int precision, int color_selection){
     Image image;
     image.loadFromFile("frame_video/0.jpg");
     Vector2 dim_original_image = image.getSize();
@@ -95,8 +95,16 @@ int ascii_transform(string path, vector<vector<string>> list_matrice_characters,
 
     vector<vector<char>> matrice_image = image_to_matrice("frame_video/"+path,dim_original_image.x,dim_original_image.y,dim_chara.x,dim_chara.y);
 
+    int color_factor;
+    if(color_selection==1){
+        color_factor = 1;
+    }
+    else{
+        color_factor = -1;
+    }
+
     //Name of the file without the .jpg
     path.string::resize(path.length()-4);
-    comparaison(list_matrice_characters,matrice_image,dim_original_image.x,dim_original_image.y,dim_chara.x,dim_chara.y,path,precision);
+    comparaison(list_matrice_characters,matrice_image,dim_original_image.x,dim_original_image.y,dim_chara.x,dim_chara.y,path,precision,color_factor);
     return 1;
 }

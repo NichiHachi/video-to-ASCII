@@ -4,18 +4,36 @@
 #include "frame_to_ascii.hpp"
 #include "ascii_to_frame.hpp"
 #include "frame_to_video.hpp"
+
 #include <filesystem>
 #include <ctime>
-#include <direct.h>
+#include <cstdio>
+#include <iostream>
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>       
 #include <opencv2/highgui/highgui.hpp> 
-using namespace std;
 
-int main(int argv, char** args){
-    create_directories("frame_ascii");
-    create_directories("frame_final_product");
-    create_directories("frame_video");
+#ifdef _WIN32
+    #include <direct.h>
+#elif __linux__
+    #include <sys/stat.h>
+#endif
+
+using namespace std;
+using namespace cv;
+
+
+int main(int argv, char** args){    
+    #ifdef _WIN32
+        _mkdir("frame_ascii");
+        _mkdir("frame_final_product");
+        _mkdir("frame_video");
+    #elif __linux__
+        mkdir("frame_ascii");
+        mkdir("frame_final_product");
+        mkdir("frame_video");
+    #endif
+
     //Make the list of character matrices
     if(!chara_to_matrice()){
         cout << "The transformation of characters into a matrice has failled...";
@@ -35,7 +53,7 @@ int main(int argv, char** args){
         cout <<"Enter the video name with the format (.mp4 .avi ...): ";
         cin >> video_path;
 
-        cv::VideoCapture videoCapture(video_path);
+        VideoCapture videoCapture(video_path);
         if(videoCapture.isOpened()){
             valid_name = true;
         }
@@ -45,7 +63,7 @@ int main(int argv, char** args){
         videoCapture.release();
     }
     
-    cv::VideoCapture Original_Video(video_path);
+    VideoCapture Original_Video(video_path);
     double FPS_Original_Video = Original_Video.get(cv::CAP_PROP_FPS);
     Original_Video.release();
 
@@ -75,7 +93,7 @@ int main(int argv, char** args){
 
     int precision;
     cout << "Degree of accuracy" << endl;
-    cout << "1) Low (Recommended for high quality video)" << endl << "2) Medium" << endl << "3) High (Recommended for low quality video)" << endl;
+    cout << "1) Low" << endl << "2) Medium" << endl << "3) High (Recommended for low quality video)" << endl;
     cout << "Enter a selection: ";
     cin >> precision;
     if(precision<1){
@@ -84,15 +102,29 @@ int main(int argv, char** args){
     else if(precision > 2){
         precision = 4;
     }
+    cout << endl;
 
-    cout << endl << "Transforming Frames into ASCII..." << endl;
+    int color_selection;
+    cout << "Color of the Background and Font" << endl;
+    cout << "1) White background and Black font" << endl << "2) Black background and White font" << endl;
+    cout << "Enter a selection: ";
+    cin >> color_selection;
+    if(color_selection<1){
+        color_selection = 1;
+    }
+    else if(color_selection > 2){
+        color_selection = 2;
+    }
+    cout << endl;
+
+    cout <<"Transforming Frames into ASCII..." << endl;
     cout << "Grab a cup of coffee and lay down, this operation takes some time !" << endl;
 
     int total_frame = distance(directory_iterator("frame_video"), directory_iterator{});
     int frame_number = 0;
 
     for(const auto & entry : directory_iterator("frame_video")){
-        ascii_transform(std::to_string(frame_number)+".jpg",list_matrice_characters,precision);
+        ascii_transform(std::to_string(frame_number)+".jpg",list_matrice_characters,precision,color_selection);
         frame_number++;
         loading_bar(total_frame,frame_number);
     }
@@ -126,7 +158,7 @@ int main(int argv, char** args){
             break;
     }
     cout << endl;
-    ascii_to_frame(font_size);
+    ascii_to_frame(font_size,color_selection);
     cout << endl;
 
     //Encoding the Video

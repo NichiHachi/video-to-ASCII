@@ -10,7 +10,7 @@ using namespace filesystem;
 const string file_storage_ascii_path = "frame_ascii/";
 const string file_depot_path = "frame_final_product/";
 
-int ascii_to_frame(int font_size){
+int ascii_to_frame(int font_size,int color_selection){
     TTF_Init();
 
     double factor_size;
@@ -26,6 +26,17 @@ int ascii_to_frame(int font_size){
             break;
     }
 
+    SDL_Color color_font;
+    int color_background;
+    if(color_selection==1){
+    color_font = {0,0,0};
+    color_background = 255;
+    }
+    else{
+    color_font = {255,255,255};
+    color_background = 0;
+    }
+
     int image_x;
     int image_y=0;
     fstream input("frame_ascii/0.txt");
@@ -36,28 +47,28 @@ int ascii_to_frame(int font_size){
         image_y++;
     }
 
-    SDL_Color w = {255,255,255};
+    Uint32 rmask,gmask,bmask,amask;
     TTF_Font* font = TTF_OpenFont("font_sdl2.ttf",font_size);
 
     SDL_Rect rect; 
     rect.x = 0;  
-    rect.y = 0; 
     rect.w = image_x*font_size*factor_size/10; 
-    rect.h = font_size; 
 
     cout <<  "Transforming ASCII into frames..." << endl;
     int frame_number = 0;
     int total_frame = distance(directory_iterator("frame_ascii"), directory_iterator{});
     for(const auto & entry : directory_iterator(file_storage_ascii_path)){
+
         SDL_Surface* frame;
         SDL_Surface* texte;
-        
         rect.y = 0; 
         rect.h = 40;
         frame = SDL_CreateRGBSurface(SDL_SWSURFACE,image_x*factor_size*font_size/10,image_y*font_size,32,0,0,0,0);
+        SDL_FillRect(frame, NULL, SDL_MapRGB(frame->format,color_background, color_background, color_background));
+
         fstream image(file_storage_ascii_path+to_string(frame_number)+".txt");
         for(string line; getline(image,line);){
-            texte = TTF_RenderText_Blended_Wrapped(font,line.c_str(),w,image_x*factor_size*font_size/10);
+            texte = TTF_RenderText_Blended_Wrapped(font,line.c_str(),color_font,image_x*factor_size*font_size/10);
             SDL_BlitSurface(texte,&rect,frame,NULL);
             SDL_FreeSurface(texte);
             rect.h += font_size; 

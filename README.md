@@ -1,6 +1,6 @@
 # Video to ASCII
 
-Convert any black and white video into an ascii version.
+Convert any black and white video into an ascii version. The program focuses on forms rather than derivatives of white and black.
 
 ## Table of Contents
 1. [Use](#how-to-use-it)
