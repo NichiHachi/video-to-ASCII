@@ -5,23 +5,29 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+
 using namespace std;
-using namespace filesystem;
+namespace fs = filesystem;
+
 const string file_storage_ascii_path = "frame_ascii/";
 const string file_depot_path = "frame_final_product/";
 
-int ascii_to_frame(int font_size,int color_selection){
+int ascii_to_frame(int selection,int color_selection){
     TTF_Init();
 
+    int font_size;
     double factor_size;
-    switch(font_size){
+    switch(selection){
         case(10):
+            font_size = 10;
             factor_size = 6;
             break;
         case(20):
+            font_size = 20;
             factor_size = 5.5;
             break;
         default:
+            font_size = 30;
             factor_size = 5.67;
             break;
     }
@@ -56,8 +62,8 @@ int ascii_to_frame(int font_size,int color_selection){
 
     cout <<  "Transforming ASCII into frames..." << endl;
     int frame_number = 0;
-    int total_frame = distance(directory_iterator("frame_ascii"), directory_iterator{});
-    for(const auto & entry : directory_iterator(file_storage_ascii_path)){
+    int total_frame = distance(fs::directory_iterator("frame_ascii"), fs::directory_iterator{});
+    for(const auto & entry : fs::directory_iterator(file_storage_ascii_path)){
 
         SDL_Surface* frame;
         SDL_Surface* texte;
@@ -79,7 +85,7 @@ int ascii_to_frame(int font_size,int color_selection){
         SDL_FreeSurface(frame);
 
         frame_number++;
-        loading_bar(total_frame,frame_number);
+        loading_bar(100*frame_number/total_frame);
     }
     TTF_CloseFont(font);
     TTF_Quit();

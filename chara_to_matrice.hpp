@@ -3,13 +3,15 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+
 using namespace sf;
 using namespace std;
-using namespace filesystem;
+namespace fs = filesystem;
+
 const string path_chara = "characters";
 const string path_table = "characters_matrice_table.txt";
 
-void image_to_matrice_txt(path path_character,string name){
+void image_to_matrice_txt(fs::path path_character,string name){
     fstream table;
     table.open("characters_matrice_table.txt",ios::app);
     Image image;
@@ -58,13 +60,13 @@ void image_to_matrice_txt(path path_character,string name){
 }
 
 void image_convert(void){
-    for(const auto & entry : directory_iterator(path_chara)){
+    for(const auto & entry : fs::directory_iterator(path_chara)){
         image_to_matrice_txt(entry.path(),entry.path().filename().string());
     }
 }
 
-vector<vector<string>> txt_to_list(){
-    int nbr_charactere = distance(directory_iterator("characters"), directory_iterator{});
+vector<vector<string>> txt_to_list(void){
+    int nbr_charactere = distance(fs::directory_iterator("characters"), fs::directory_iterator{});
     vector<vector<string>> list_matrice_characters(nbr_charactere, vector<string>(2,""));
     int h=0;
     int modulo;

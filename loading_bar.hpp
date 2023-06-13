@@ -1,8 +1,24 @@
 #include <iostream>
 #include <string>
-using namespace std;
+#ifdef _WIN32
+#include <Windows.h>
+#endif
 
-void loading_bar(int value_max, int value_at_the_moment){
-    string loading_bar = to_string(value_at_the_moment*100/value_max)+"% ["+string(value_at_the_moment*60/value_max,'|')+string(60-value_at_the_moment*60/value_max,' ')+']';
-    cout << "\r" << loading_bar;
+void loading_bar(int percent){
+    #ifdef _WIN32
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    DWORD dwMode = 0;
+    GetConsoleMode(hOut, &dwMode);
+    SetConsoleMode(hOut, dwMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+    #endif
+    //Color YELLOW
+    if(percent!=100){
+        std::cout << "\033[33m";
+    }
+    //Color GREEN
+    else{
+        std::cout << "\033[32m";
+    }
+    std::string loading_bar = std::to_string(percent)+"% ["+std::string(percent/2,'|')+std::string(50-percent/2,' ')+']';
+    std::cout << "\r" << loading_bar << "\033[0m";
 }

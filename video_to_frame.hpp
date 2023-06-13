@@ -2,13 +2,13 @@
 #include <opencv2/opencv.hpp>
 using namespace std;
 
-int video_to_frame(string video_path,int frame_video, int frame_ascii){ 
+int video_to_frame(string video_path, int frame_video, int frame_ascii){ 
     cv::VideoCapture videoCapture(video_path);
     int frameCount = 0;
     int frame_number;
     int how_many_frame_to_skip = frame_video/frame_ascii;
-    cout << "0 frames created.";
 
+    cout << "0 frames created.";
     cv::Mat frame;
     while (videoCapture.read(frame)) {
         if(frameCount%(how_many_frame_to_skip)==0){
@@ -16,13 +16,13 @@ int video_to_frame(string video_path,int frame_video, int frame_ascii){
             string frameFileName = "frame_video/"+to_string(frame_number) + ".jpg";
             cv::imwrite(frameFileName, frame);
             if(frame_number%25==0){
-                cout << "\r" << frame_number <<" frames created.";
+                cout << "\r" << frame_number <<" frames extracted.";
             }
         }
         frameCount++;
     }
     
-    cout << "\r" << frameCount <<" frames created."<< endl;
+    cout << "\r" << frame_number+1 <<" frames extracted."<< endl;
     videoCapture.release();
 
     return 1;

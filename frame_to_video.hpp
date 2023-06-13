@@ -4,10 +4,12 @@
 #include <opencv2/core/core.hpp>       
 #include <opencv2/highgui/highgui.hpp> 
 #include <SFML/Graphics.hpp>
+
 using namespace sf;
 using namespace std;
-using namespace filesystem;
+namespace fs = filesystem;
 using namespace cv;
+
 const string pathing = "frame_final_product/";
 
 int frame_to_video(string name, int FPS){
@@ -19,12 +21,12 @@ int frame_to_video(string name, int FPS){
 
     cout << "Writing in progress..." << endl;
 
-    int total_frame = distance(directory_iterator("frame_final_product"), directory_iterator{}); 
+    int total_frame = distance(fs::directory_iterator("frame_final_product"), fs::directory_iterator{}); 
     int frame_number=0;
-    for(const auto & entry : directory_iterator(pathing)){
+    for(const auto & entry : fs::directory_iterator(pathing)){
         outputVideo.write(imread(pathing+to_string(frame_number)+".jpg"));
         frame_number++;
-        loading_bar(total_frame,frame_number);
+        loading_bar(frame_number*100/total_frame);
     }
     cout << endl;
     return 1;
