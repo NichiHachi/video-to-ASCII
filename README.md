@@ -1,21 +1,23 @@
 # Video to ASCII
 
-Convert any black and white video into an ascii version. The program focuses on forms rather than derivatives of white and black.
+Convert any bicolor video (Black and White) and tricolor video (Black, White and Grey) into an ascii version. The program focuses on forms rather than color derivatives. Works on Linux and Windows !
 
 ## Table of Contents
-1. [Use](#how-to-use-it)
+1. [Usage](#usage)
 2. [Accuracies](#accuracies)
 3. [Characters](#characters)
 3. [Libraries](#libraries)
 
-## How to use
+## Usage
 1. Put your video in the folder.
 
 2. Run main.exe
 
-3. After the rendering of the video is finished, in the folder there is a video called ASCII_+the original name.
+3. After the rendering of the video is finished, there will be a video called ASCII_+the original name.
 
-Example of rendering : https://youtu.be/N1hLC0iY8EU
+Example of rendering : 
+* [Bicolor](https://youtu.be/N1hLC0iY8EU) 
+* [Tricolor](https://youtu.be/N4aEcCQ9WDY)
 
 ## Accuracies
 The different accuracies based on the 480p video of [Bad Apple!!](https://www.youtube.com/watch?v=FtutLA63Cp8) :

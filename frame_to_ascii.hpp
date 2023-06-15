@@ -11,85 +11,89 @@ namespace fs = filesystem;
 
 const string path_folder_frame_video = "frame_video";
 const string path_folder_ascii = "frame_ascii";
+const string path_folder_ascii_color_1 = "frame_ascii_color_1";
+const string path_folder_ascii_color_2 = "frame_ascii_color_2";
 
-void image_bicolor_maping_matrice(char **arr, string path_file, int dim_video_x, int dim_video_y, int dim_chara_x, int dim_chara_y){
+vector<vector<char>> bicolor_image_maping_matrix(string path_file, int dim_array_x, int dim_array_y){
     Image image;
     image.loadFromFile(path_file);
     Color color;
     int color_add;
-    int x_max = dim_video_x-(dim_video_x%dim_chara_x);
-    int y_max = dim_video_y-(dim_video_y%dim_chara_y);
-    for(int y=0;y<y_max;y++){
-        for(int x=0;x<x_max;x++){
+    vector<vector<char>> matrix_image(dim_array_y, std::vector<char>(dim_array_x, '0'));
+    for(int y=0;y<dim_array_y;y++){
+        for(int x=0;x<dim_array_x;x++){
             color = image.getPixel(x,y);
             color_add = color.r+color.g+color.b;
             if(color_add < 192){
-                arr[y][x] = '1';
-            }
-            else{
-                arr[y][x] = '0';
+                matrix_image[y][x] = '1';
             }
         }
     }
+    return matrix_image;
 }
 
 
-void bicolor_image_maping_matrice(char **arr, string path_file, int dim_video_x, int dim_video_y, int dim_chara_x, int dim_chara_y){
+vector<vector<char>> tricolor_image_maping_matrix(string path_file, int dim_array_x, int dim_array_y){
     Image image;
     image.loadFromFile(path_file);
     Color color;
     int color_add;
-    int x_max = dim_video_x-(dim_video_x%dim_chara_x);
-    int y_max = dim_video_y-(dim_video_y%dim_chara_y);
-    for(int y=0;y<y_max;y++){
-        for(int x=0;x<x_max;x++){
+    vector<vector<char>> matrix_image(dim_array_y, std::vector<char>(dim_array_x, '1'));
+    //A changer
+    for(int y=0;y<dim_array_y;y++){
+        for(int x=0;x<dim_array_x;x++){
             color = image.getPixel(x,y);
             color_add = color.r+color.g+color.b;
             if(color_add < 192){
-                arr[y][x] = '2';
+                matrix_image[y][x] = '2';
             }
             else if(color_add > 573){
-                arr[y][x] = '0';
-            }
-            else{
-                arr[y][x] = '1';
+                matrix_image[y][x] = '0';
             }
         }
     }
+    return matrix_image;
 }
 
-void bicolor_frame_to_ascii(vector<vector<string>>list_matrice_characters,char **matrice_image, string name_file, int precision, int color_factor, int dim_video_x, int dim_video_y,int dim_x_chara, int dim_y_chara){
+void bicolor_frame_to_ascii(vector<vector<string>>list_matrix_characters,vector<vector<char>>matrix_image, string name_file, int precision, int color_factor, int dim_video_x, int dim_video_y, int dim_x_chara, int dim_y_chara){
     int number_x_box = dim_video_x/dim_x_chara*precision;
     int number_y_box = dim_video_y/dim_y_chara*precision;
-    int nbr_charactere = distance(fs::directory_iterator("characters"), fs::directory_iterator{});
+    int nbr_character = distance(fs::directory_iterator("characters"), fs::directory_iterator{});
     int score;
     int max_score;
     char max_chara;
     bool can_have_better_score;
+    int color_image_at_cord;
+    int color_char_at_cord;
 
     fstream outfile(path_folder_ascii+'/'+name_file+".txt");
     fstream table;
-    table.open(path_folder_ascii+'/'+name_file+".txt",std::ofstream::out | std::ofstream::trunc);
-    table.close();
     table.open(path_folder_ascii+'/'+name_file+".txt",ios::app);
 
     for(int y_box=0 ; y_box<number_y_box ; y_box++){
         for(int x_box=0 ; x_box<number_x_box ; x_box++){
             max_score = -1000;
 
-            for(int index_chara=0 ; index_chara<nbr_charactere ; index_chara++){
+            for(int index_chara=0 ; index_chara<nbr_character ; index_chara++){
                 score = 0;
                 can_have_better_score = true;
 
                 for(int y_pixel_in_box=0 ; y_pixel_in_box<dim_y_chara ; y_pixel_in_box++){
                     for(int x_pixel_in_box=0 ; x_pixel_in_box<dim_x_chara ; x_pixel_in_box++){
-                        if(matrice_image[(y_pixel_in_box+y_box*dim_y_chara)/precision][(x_pixel_in_box+x_box*dim_x_chara)/precision]==list_matrice_characters[index_chara][1][y_pixel_in_box*dim_x_chara+x_pixel_in_box]){
+                        color_image_at_cord = matrix_image[(y_pixel_in_box+y_box*dim_y_chara)/precision][(x_pixel_in_box+x_box*dim_x_chara)/precision];
+                        color_char_at_cord = list_matrix_characters[index_chara][1][y_pixel_in_box*dim_x_chara+x_pixel_in_box];
+                        if(color_image_at_cord==color_char_at_cord){
                             //If both (x,y) pixel is Black substract 2 to the score and if the pixel is white it's -1.
-                            score+=(int(list_matrice_characters[index_chara][1][y_pixel_in_box*dim_x_chara+x_pixel_in_box])-47)*color_factor; 
+                            if(color_image_at_cord=='0'){
+                                score+=15*color_factor; 
+                            }
+                            else{
+                                score+=1*color_factor;
+                            }
                         }
                         else{
                             //If the (x,y) pixel is black on one and the other it's white, add 2 to the score.
-                            score-=2*color_factor;
+                            score-=1*color_factor;
                         }
 
                         if(score+(dim_x_chara*(dim_y_chara-y_pixel_in_box-1)+dim_x_chara-1-x_pixel_in_box)*2<max_score){
@@ -104,7 +108,7 @@ void bicolor_frame_to_ascii(vector<vector<string>>list_matrice_characters,char *
 
                 }
                 if(score>max_score){
-                    max_chara = list_matrice_characters[index_chara][0][0];
+                    max_chara = list_matrix_characters[index_chara][0][0];
                     max_score = score;
                 }
             }
@@ -113,6 +117,100 @@ void bicolor_frame_to_ascii(vector<vector<string>>list_matrice_characters,char *
         table<<endl;
     }
     table.close();
+}
+
+void tricolor_frame_to_ascii(vector<vector<string>>list_matrix_characters,vector<vector<char>>matrix_image, char color_1, char color_2, string name_file, int precision, int dim_video_x, int dim_video_y, int dim_x_chara, int dim_y_chara){
+    int number_x_box = dim_video_x/dim_x_chara*precision;
+    int number_y_box = dim_video_y/dim_y_chara*precision;
+    int nbr_character = distance(fs::directory_iterator("characters"), fs::directory_iterator{});
+    int score_color_1;
+    int score_color_2;
+    int max_score_1;
+    int max_score_2;
+    char max_chara_1;
+    char max_chara_2;
+    bool can_have_better_score;
+    char color_image_at_cord;
+    char color_char_at_cord;
+
+    fstream outfile1(path_folder_ascii_color_1+'/'+name_file+".txt");
+    fstream ascii_color_1;
+    ascii_color_1.open(path_folder_ascii_color_1+'/'+name_file+".txt",ios::app);
+    
+    fstream outfile2(path_folder_ascii_color_2+'/'+name_file+".txt");
+    fstream ascii_color_2;
+    ascii_color_2.open(path_folder_ascii_color_2+'/'+name_file+".txt",ios::app);
+
+    for(int y_box=0 ; y_box<number_y_box ; y_box++){
+        for(int x_box=0 ; x_box<number_x_box ; x_box++){
+            max_score_1 = -1000;
+            max_score_2 = -1000;
+
+            for(int index_chara=0 ; index_chara<nbr_character ; index_chara++){
+                score_color_1 = 0;
+                score_color_2 = 0;
+                can_have_better_score = true;
+
+                for(int y_pixel_in_box=0 ; y_pixel_in_box<dim_y_chara ; y_pixel_in_box++){
+                    for(int x_pixel_in_box=0 ; x_pixel_in_box<dim_x_chara ; x_pixel_in_box++){
+                        color_image_at_cord = matrix_image[(y_pixel_in_box+y_box*dim_y_chara)/precision][(x_pixel_in_box+x_box*dim_x_chara)/precision];
+                        color_char_at_cord = list_matrix_characters[index_chara][1][y_pixel_in_box*dim_x_chara+x_pixel_in_box];
+                        //SCORE COLOR 1
+                        if(color_image_at_cord==color_1 && color_char_at_cord=='1'){
+                            score_color_1+=15; 
+                        }
+                        else if(color_image_at_cord!=color_1 && color_char_at_cord=='0'){
+                            score_color_1+=1;
+                        }
+                        else{
+                            score_color_1-=1;
+                        }
+
+                        //SCORE COLOR 2
+                        if(color_image_at_cord==color_2 && color_char_at_cord=='1'){
+                            score_color_2+=15; 
+                        }
+                        else if(color_image_at_cord!=color_2 && color_char_at_cord=='0'){
+                            score_color_2+=1;
+                        }
+                        else{
+                            score_color_2-=1;
+                        }
+
+                        if(score_color_1+(dim_x_chara*(dim_y_chara-y_pixel_in_box-1)+dim_x_chara-1-x_pixel_in_box)*17<max_score_1 && score_color_2+(dim_x_chara*(dim_y_chara-y_pixel_in_box-1)+dim_x_chara-1-x_pixel_in_box)*17<max_score_2){
+                            can_have_better_score = false;
+                            break;
+                        }
+                    }
+                    //If the perfect score can't be better than max_score, it's useless to continue
+                    if(!can_have_better_score){
+                        break;
+                    }
+
+                }
+                if(score_color_1>max_score_1){
+                    max_chara_1 = list_matrix_characters[index_chara][0][0];
+                    max_score_1 = score_color_1;
+                }
+                if(score_color_2>max_score_2){
+                    max_chara_2 = list_matrix_characters[index_chara][0][0];
+                    max_score_2 = score_color_2;
+                }
+            }
+            if(max_score_1>max_score_2){
+                ascii_color_1<<max_chara_1;
+                ascii_color_2<<' ';
+            }
+            else{
+                ascii_color_2<<max_chara_2;
+                ascii_color_1<<' ';
+            }
+        } 
+        ascii_color_1<<endl;
+        ascii_color_2<<endl;
+    }
+    ascii_color_1.close();
+    ascii_color_2.close();
 }
 
 int frame_to_ascii(int precision, int color_selection, bool isTricolor){
@@ -124,37 +222,68 @@ int frame_to_ascii(int precision, int color_selection, bool isTricolor){
     chara.loadFromFile("characters/#.jpg");
     Vector2 dim_chara = chara.getSize();
 
-    vector<vector<string>> character_matrice = txt_to_list();
+    vector<vector<string>> character_matrix = txt_to_list();
+
+    int dim_video_x = dim_video.x-(dim_video.x%dim_chara.x);
+    int dim_video_y = dim_video.y-(dim_video.y%dim_chara.y);
 
     int total_frame = distance(fs::directory_iterator(path_folder_frame_video), fs::directory_iterator{});
-    int frame_number = 0;
+
+    double precision_factor;
+    if(precision==2){
+        precision_factor=2;
+    }
+    else{
+        precision_factor=1;
+    }
 
     if(!isTricolor){
         int color_factor; 
         if(color_selection==1){
-        color_factor = 1;
+            color_factor = 1;
         }
         else{
             color_factor = -1;
         }
-
-        int dim_arr_y = dim_video.y-(dim_video.y%dim_chara.y);
-        int dim_arr_x = dim_video.x-(dim_video.x%dim_chara.x);
         
-        char** arr = new char*[dim_arr_y];
-        for (int i=0; i < dim_arr_y; i++) {
-            arr[i] = new char[dim_arr_x];
-        }
+        vector<vector<char>> arr(dim_video_x, std::vector<char>(dim_video_y));
+        int percent = -1;
+        for(int frame_number=0; frame_number<total_frame;frame_number++){
+            vector<vector<char>> arr = bicolor_image_maping_matrix(path_folder_frame_video+'/'+std::to_string(frame_number)+".jpg", dim_video_x, dim_video_y);
+            bicolor_frame_to_ascii(character_matrix,arr,std::to_string(frame_number), precision, color_factor, dim_video_x, dim_video_y, dim_chara.x, dim_chara.y);
 
-        for(const auto & entry : fs::directory_iterator(path_folder_frame_video)){
-            image_bicolor_maping_matrice(arr,path_folder_frame_video+'/'+std::to_string(frame_number)+".jpg",dim_video.x,dim_video.y,dim_chara.x,dim_chara.y);
-            bicolor_frame_to_ascii(character_matrice,arr,std::to_string(frame_number),precision,color_factor,dim_video.x,dim_video.y,dim_chara.x,dim_chara.y);
-            frame_number++;
-            loading_bar(100*frame_number/total_frame);
+            if(percent != 100*(frame_number+1)/total_frame){
+                percent = 100*(frame_number+1)/total_frame;
+                loading_bar(percent);
+            }
         }
     }
     else{
-        ;
+        char color_1,color_2;
+        if(color_selection==1){
+            color_1 = '2';
+            color_2 = '1';
+        }
+        else if(color_selection==2){
+            color_1 = '0';
+            color_2 = '1';
+        }
+        else{
+            color_1 = '2';
+            color_2 = '0';
+        }
+        
+        vector<vector<char>> arr(dim_video_x, std::vector<char>(dim_video_y));
+        int percent = -1;
+        for(int frame_number=0; frame_number<total_frame;frame_number++){
+            vector<vector<char>> arr = tricolor_image_maping_matrix(path_folder_frame_video+'/'+std::to_string(frame_number)+".jpg", dim_video_x, dim_video_y);
+            tricolor_frame_to_ascii(character_matrix,arr,color_1,color_2,std::to_string(frame_number), precision, dim_video_x, dim_video_y, dim_chara.x, dim_chara.y);
+
+            if(percent != 100*(frame_number+1)/total_frame){
+                percent = 100*(frame_number+1)/total_frame;
+                loading_bar(percent);
+            }
+        }
     }
     cout << endl;
     return 1;

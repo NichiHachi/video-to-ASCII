@@ -1,5 +1,5 @@
 #include "loading_bar.hpp"
-#include "chara_to_matrice.hpp"
+#include "chara_to_matrix.hpp"
 #include "video_to_frame.hpp"
 #include "frame_to_ascii.hpp"
 #include "ascii_to_frame.hpp"
@@ -24,41 +24,48 @@ using namespace cv;
 namespace fs = std::filesystem;
 
 
-int main(int argv, char** args){    
+int main(int argv, char** args){
     #ifdef _WIN32
         _mkdir("frame_ascii");
+        _mkdir("frame_ascii_color_1");
+        _mkdir("frame_ascii_color_2");
         _mkdir("frame_final_product");
         _mkdir("frame_video");
     #elif __linux__
         mkdir("frame_ascii");
+        mkdir("frame_ascii_color_1");
+        mkdir("frame_ascii_color_2");
         mkdir("frame_final_product");
         mkdir("frame_video");
     #endif
-
-    //Remove any files in Frame Video
+    
     for(const auto & entry : fs::directory_iterator("frame_video")){
         fs::remove(entry);
     }
+
+    for(const auto & entry : fs::directory_iterator("frame_ascii_color_1")){
+        fs::remove(entry);
+    }
     
-    //Remove any files in Frame ASCII
+    for(const auto & entry : fs::directory_iterator("frame_ascii_color_2")){
+        fs::remove(entry);
+    }
+    
     for(const auto & entry : fs::directory_iterator("frame_ascii")){
         fs::remove(entry);
     }
 
-    //Remove any files in Frame Final Product
     for(const auto & entry : fs::directory_iterator("frame_final_product")){
         fs::remove(entry);
     }
-    
     //ASKING ALL VALUES TO THE USER:
     // - video_path: The name of the video
     // - FPS_ASCII_Video: The number of FPS of the ASCII video
+    // - multi_color_selection: How many color the ascii need to be 
     // - color_selection: The color of the font and background
-    // - precision: How accurate is the ASCII
-    // - quality_selection: How big the resolution of the frames is
+    // - precision_selection: How accurate is the ASCII
 
     bool valid_name;
-
     string video_path;
     do{
         cout <<"Enter the video name with the format (.mp4 .avi ...): ";
@@ -95,52 +102,73 @@ int main(int argv, char** args){
     cout << endl;
 
 
-    int color_selection;
+    int multi_color_selection;
     do{
-        cout << "Color of the video" << endl;
-        cout << "1) White background and Black font" << endl;
-        cout << "2) Black background and White font" << endl;
+        cout << "Multi-Color" << endl;
+        cout << "1) Bicolor: Black and White" << endl;
+        cout << "2) Tricolor: Black, White and Grey" << endl;
         cout << "Enter a selection: ";
-        cin >> color_selection;
-        if(color_selection!=1 && color_selection!=2){
+        cin >> multi_color_selection;
+        if(multi_color_selection!=1 && multi_color_selection!=2){
             cout << "Selection incorrect, please select a value between 1 and 2." << endl << endl;
         }
-    }while(color_selection!=1 && color_selection!=2);
+    }while(multi_color_selection!=1 && multi_color_selection!=2);
     cout << endl;
 
 
-    int precision;
+    bool isTricolor;
+    int color_selection;
+    if(multi_color_selection==1){
+        isTricolor = false;
+        do{
+            cout << "Color of the video" << endl;
+            cout << "1) White background with Black font" << endl;
+            cout << "2) Black background with White font" << endl;
+            cout << "Enter a selection: ";
+            cin >> color_selection;
+            if(color_selection!=1 && color_selection!=2){
+                cout << "Selection incorrect, please select a value between 1 and 2." << endl << endl;
+            }
+        }while(color_selection!=1 && color_selection!=2);
+        cout << endl;
+    }
+    else{
+        isTricolor = true;
+        do{
+            cout << "Color of the video" << endl;
+            cout << "1) White background with Black and Grey font" << endl;
+            cout << "2) Black background with White and Grey font" << endl;
+            cout << "3) Grey background with Black and White font" << endl;
+            cout << "Enter a selection: ";
+            cin >> color_selection;
+            if(color_selection!=1 && color_selection!=2 && color_selection!=3){
+                cout << "Selection incorrect, please select a value between 1 and 3." << endl << endl;
+            }
+        }while(color_selection!=1 && color_selection!=2 && color_selection!=3);
+        cout << endl;
+    }
+
+
+    int precision_selection;
     do{
         cout << "Degree of accuracy" << endl;
-        cout << "1) Low" << endl << "2) Medium" << endl << "3) High (Recommended for low quality video)" << endl;
+        cout << "1) Normal" << endl << "2) High" << endl << "3) Very High" << endl;
         cout << "Enter a selection: ";
-        cin >> precision;
-        if(precision<1 || precision>3){
+        cin >> precision_selection;
+        if(precision_selection<1 || precision_selection>3){
                 cout << "Selection incorrect, please select a value between 1 and 3." << endl << endl;
         }
-    }while(precision<1 || precision>3);
-    cout << endl;
-
-
-    int quality_selection;
-    do{
-        cout << "Video Quality" << endl;
-        cout << "1) Low" << endl << "2) Medium (Recommended)" << endl << "3) High" << endl;
-        cout << "Enter a selection: ";
-        cin >> quality_selection;
-        if(quality_selection<1 || quality_selection>3){
-                cout << "Selection incorrect, please select a value between 1 and 3." << endl << endl;
-        }
-    }while(quality_selection<1 || quality_selection>3);
+    }while(precision_selection<1 || precision_selection>3);
     cout << endl;
 
     //END ASKING VALUES TO THE USER
     //MAKING THE VIDEO :
 
-    //Make the list of character matrices (The txt file)
-    if(!chara_to_matrice()){
-        cout << "The transformation of characters into a matrice has failled...";
-        return 0;
+    if(precision_selection==3){
+        chara_to_matrix("characters_low");
+    }
+    else{
+        chara_to_matrix("characters");
     }
 
 
@@ -152,12 +180,18 @@ int main(int argv, char** args){
     time_t time_before_making_ascii_frame = time(NULL);
     cout <<"Transforming Frames into ASCII..." << endl;
     cout << "Grab a cup of coffee and lay down, this operation takes some time !" << endl;
-    frame_to_ascii(precision,color_selection,false);
-    cout <<"Time spent making the ASCII frames : " << time(NULL)-time_before_making_ascii_frame << " seconds" << endl;
+    frame_to_ascii(precision_selection,color_selection,isTricolor);
+    cout <<"Time spent making the ASCII frames: " << time(NULL)-time_before_making_ascii_frame << " seconds" << endl;
     cout << endl;
 
     
-    ascii_to_frame(quality_selection,color_selection);
+    cout <<  "Transforming ASCII into Frames..." << endl;
+    if(!isTricolor){
+        ascii_to_frame(color_selection);
+    }
+    else{
+        ascii_to_frame_tricolor(color_selection);
+    }
     cout << endl;
     cout << endl;
 
@@ -165,7 +199,6 @@ int main(int argv, char** args){
     //Encoding the Video
     frame_to_video(video_path,FPS_ASCII_Video);
     cout << endl;
-
     
     ios_base::sync_with_stdio(false);
     cout << "Press Enter to End...";

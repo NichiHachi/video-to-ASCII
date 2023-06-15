@@ -8,12 +8,11 @@ using namespace sf;
 using namespace std;
 namespace fs = filesystem;
 
-const string path_chara = "characters";
-const string path_table = "characters_matrice_table.txt";
+const string path_table = "characters_matrix_table.txt";
 
-void image_to_matrice_txt(fs::path path_character,string name){
+void image_to_matrix_txt(fs::path path_character,string name){
     fstream table;
-    table.open("characters_matrice_table.txt",ios::app);
+    table.open("characters_matrix_table.txt",ios::app);
     Image image;
     Color color;
     image.loadFromFile((path_character).string());
@@ -36,8 +35,17 @@ void image_to_matrice_txt(fs::path path_character,string name){
     else if(name=="slash.jpg"){
         table << '/' << endl;
     }
+    else if(name=="anti_slash.jpg"){
+        table << char(92) << endl;
+    }
     else if(name=="point.jpg"){
         table << '.' << endl;
+    }
+    else if(name=="_!.jpg"){
+        table << '!' << endl;
+    }
+    else if(name=="bar.jpg"){
+        table << '|' << endl;
     }
     else{
         table << name[0] << endl;
@@ -59,15 +67,15 @@ void image_to_matrice_txt(fs::path path_character,string name){
     table.close();
 }
 
-void image_convert(void){
+void image_convert(string path_chara){
     for(const auto & entry : fs::directory_iterator(path_chara)){
-        image_to_matrice_txt(entry.path(),entry.path().filename().string());
+        image_to_matrix_txt(entry.path(),entry.path().filename().string());
     }
 }
 
 vector<vector<string>> txt_to_list(void){
-    int nbr_charactere = distance(fs::directory_iterator("characters"), fs::directory_iterator{});
-    vector<vector<string>> list_matrice_characters(nbr_charactere, vector<string>(2,""));
+    int nbr_character = distance(fs::directory_iterator("characters"), fs::directory_iterator{});
+    vector<vector<string>> list_matrix_characters(nbr_character, vector<string>(2,""));
     int h=0;
     int modulo;
     
@@ -79,21 +87,21 @@ vector<vector<string>> txt_to_list(void){
     for(string line; getline(input,line);){
         modulo = h%(dim_chara.y+1);
         if(modulo==0){
-               list_matrice_characters[h/(dim_chara.y+1)][0] = line[0];
+               list_matrix_characters[h/(dim_chara.y+1)][0] = line[0];
         }
         else{
-                list_matrice_characters[(h-modulo)/(dim_chara.y+1)][1]+=line;
+                list_matrix_characters[(h-modulo)/(dim_chara.y+1)][1]+=line;
         }
         h++;
     }
-    return list_matrice_characters;
+    return list_matrix_characters;
 }
 
-int chara_to_matrice(void){
-    fstream outfile("characters_matrice_table.txt");
-    fstream table_matrice;
-    table_matrice.open("characters_matrice_table.txt",std::ofstream::out | std::ofstream::trunc);
-    table_matrice.close();
-    image_convert();
+int chara_to_matrix(string path_chara){
+    fstream outfile("characters_matrix_table.txt");
+    fstream table_matrix;
+    table_matrix.open("characters_matrix_table.txt",std::ofstream::out | std::ofstream::trunc);
+    table_matrix.close();
+    image_convert(path_chara);
     return 1;
 }
