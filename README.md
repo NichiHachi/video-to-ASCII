@@ -17,7 +17,7 @@ Convert any bicolor video (Black and White) and tricolor video (Black, White and
 
 Example of rendering : 
 * [Bicolor](https://youtu.be/N1hLC0iY8EU) 
-* [Tricolor](https://youtu.be/N4aEcCQ9WDY)
+* [Tricolor](https://youtu.be/Pw8RY91ikfQ)
 
 ## Accuracies
 The different accuracies based on the 480p video of [Bad Apple!!](https://www.youtube.com/watch?v=FtutLA63Cp8) :
