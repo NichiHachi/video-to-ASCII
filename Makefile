@@ -1,11 +1,32 @@
-SFML_include = "C:\libraries\SFML-2.5.1\include"
-SDL_include = "C:\libraries\SDL2-2.26.5\x86_64-w64-mingw32\include" 
-OpenCV_include = "C:\libraries\OpenCV\include"
-SFML_lib = "C:\libraries\SFML-2.5.1\lib"
-SDL_lib = "C:\libraries\SDL2-2.26.5\x86_64-w64-mingw32\lib"
-OpenCV_lib = "C:\libraries\OpenCV\x64\mingw\lib"
+CXX = g++
+CXXFLAGS = -I/usr/include/opencv2
+LDFLAGS = -L/usr/local/lib
+LDLIBS = -lsfml-graphics -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
+LDLIBS_OPENCV = -lopencv_calib3d -lopencv_highgui -lopencv_core -lopencv_video -lopencv_videoio -lopencv_photo -lopencv_imgcodecs -lopencv_imgproc
 
-all : main_program
+all : main
 
-main_program :
-	g++ main.cpp -o main -I$(SFML_include) -I $(SDL_include) -I$(OpenCV_include) -L$(SFML_lib) -L$(SDL_lib) -L$(OpenCV_lib) -lsfml-graphics -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf  -lopencv_calib3d455 -lopencv_highgui455 -lopencv_core455 -lopencv_video455 -lopencv_videoio455 -lopencv_photo455 -lopencv_imgcodecs455 -lopencv_imgproc455
+main: main.cpp ascii_to_frame.o chara_to_matrix.o frame_to_ascii.o frame_to_video.o loading_bar.o video_to_frame.o
+	$(CXX) $^ -o $@ $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) $(LDLIBS_OPENCV)
+
+ascii_to_frame.o: ascii_to_frame.cpp
+	$(CXX) -c $<
+
+chara_to_matrix.o: chara_to_matrix.cpp
+	$(CXX) -c $<
+
+frame_to_ascii.o: frame_to_ascii.cpp
+	$(CXX) -c $<
+
+frame_to_video.o: frame_to_video.cpp
+	$(CXX) -c $< $(CXXFLAGS) $(LDFLAGS) $(LDLIBS_OPENCV) -o $@
+
+loading_bar.o: loading_bar.cpp
+	$(CXX) -c $<
+
+video_to_frame.o: video_to_frame.cpp
+	$(CXX) -c $< $(CXXFLAGS) $(LDFLAGS) $(LDLIBS_OPENCV) -o $@
+
+clean:
+	rm *.o
+	rm main
