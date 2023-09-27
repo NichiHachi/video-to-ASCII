@@ -33,7 +33,6 @@ std::vector<std::vector<char>> bicolor_image_maping_matrix(std::string path_file
     return matrix_image;
 }
 
-
 std::vector<std::vector<char>> tricolor_image_maping_matrix(std::string path_file, int dim_array_x, int dim_array_y){
     sf::Image image;
     image.loadFromFile(path_file);
@@ -59,7 +58,13 @@ std::vector<std::vector<char>> tricolor_image_maping_matrix(std::string path_fil
 void bicolor_frame_to_ascii(std::vector<std::vector<std::string>>list_matrix_characters,std::vector<std::vector<char>>matrix_image, std::string name_file, int precision, int color_factor, int dim_video_x, int dim_video_y, int dim_x_chara, int dim_y_chara){
     int number_x_box = dim_video_x/dim_x_chara*precision;
     int number_y_box = dim_video_y/dim_y_chara*precision;
-    int nbr_character = std::distance(fs::directory_iterator("characters"), fs::directory_iterator{});
+    int nbr_character;
+    if(precision==3){
+        nbr_character = std::distance(fs::directory_iterator("characters_low"), fs::directory_iterator{});
+    }
+    else{
+        nbr_character = std::distance(fs::directory_iterator("characters"), fs::directory_iterator{});
+    }
     int score;
     int max_score;
     char max_chara;
@@ -81,25 +86,29 @@ void bicolor_frame_to_ascii(std::vector<std::vector<std::string>>list_matrix_cha
 
                 for(int y_pixel_in_box=0 ; y_pixel_in_box<dim_y_chara ; y_pixel_in_box++){
                     for(int x_pixel_in_box=0 ; x_pixel_in_box<dim_x_chara ; x_pixel_in_box++){
-                        color_image_at_cord = matrix_image[(y_pixel_in_box+y_box*dim_y_chara)/precision][(x_pixel_in_box+x_box*dim_x_chara)/precision];
-                        color_char_at_cord = list_matrix_characters[index_chara][1][y_pixel_in_box*dim_x_chara+x_pixel_in_box];
-                        if(color_image_at_cord==color_char_at_cord){
-                            //If both (x,y) pixel is Black substract 2 to the score and if the pixel is white it's -1.
-                            if(color_image_at_cord=='0'){
-                                score+=15*color_factor; 
+
+                        if(y_pixel_in_box + y_box * dim_y_chara / precision < matrix_image.size() && x_pixel_in_box + x_box * dim_x_chara / precision < matrix_image[0].size() 
+                        && index_chara < list_matrix_characters.size() && y_pixel_in_box * dim_x_chara + x_pixel_in_box < list_matrix_characters[index_chara][1].size()){
+
+                            color_image_at_cord = matrix_image[(y_pixel_in_box+y_box*dim_y_chara)/precision][(x_pixel_in_box+x_box*dim_x_chara)/precision];
+                            color_char_at_cord = list_matrix_characters[index_chara][1][y_pixel_in_box*dim_x_chara+x_pixel_in_box];
+                            if(color_image_at_cord==color_char_at_cord){
+                                if(color_image_at_cord=='0'){
+                                    score+=15*color_factor; 
+                                }
+                                else{
+                                    score+=1*color_factor;
+                                }
                             }
                             else{
-                                score+=1*color_factor;
+                                //If the (x,y) pixel is black on one and the other it's white.
+                                score-=15*color_factor;
                             }
-                        }
-                        else{
-                            //If the (x,y) pixel is black on one and the other it's white, add 2 to the score.
-                            score-=1*color_factor;
-                        }
 
-                        if(score+(dim_x_chara*(dim_y_chara-y_pixel_in_box-1)+dim_x_chara-1-x_pixel_in_box)*2<max_score){
-                            can_have_better_score = false;
-                            break;
+                            if(score+(dim_x_chara*(dim_y_chara-y_pixel_in_box-1)+dim_x_chara-1-x_pixel_in_box)*10<max_score){
+                                can_have_better_score = false;
+                                break;
+                            }
                         }
                     }
                     //If the perfect score can't be better than max_score, it's useless to continue
@@ -178,7 +187,7 @@ void tricolor_frame_to_ascii(std::vector<std::vector<std::string>>list_matrix_ch
                             score_color_2-=1;
                         }
 
-                        if(score_color_1+(dim_x_chara*(dim_y_chara-y_pixel_in_box-1)+dim_x_chara-1-x_pixel_in_box)*17<max_score_1 && score_color_2+(dim_x_chara*(dim_y_chara-y_pixel_in_box-1)+dim_x_chara-1-x_pixel_in_box)*17<max_score_2){
+                        if(score_color_1+(dim_x_chara*(dim_y_chara-y_pixel_in_box-1)+dim_x_chara-1-x_pixel_in_box)*15<max_score_1 && score_color_2+(dim_x_chara*(dim_y_chara-y_pixel_in_box-1)+dim_x_chara-1-x_pixel_in_box)*15<max_score_2){
                             can_have_better_score = false;
                             break;
                         }
@@ -214,24 +223,29 @@ void tricolor_frame_to_ascii(std::vector<std::vector<std::string>>list_matrix_ch
     ascii_color_2.close();
 }
 
-std::vector<std::vector<std::string>> txt_to_list(void){
+std::vector<std::vector<std::string>> txt_to_list(int precision){
     int nbr_character = std::distance(fs::directory_iterator("characters"), fs::directory_iterator{});
     std::vector<std::vector<std::string>> list_matrix_characters(nbr_character, std::vector<std::string>(2,""));
     int h=0;
     int modulo;
     
-    sf::Image image;
-    image.loadFromFile("characters/#.jpg");
-    sf::Vector2 dim_chara = image.getSize();
+    sf::Image chara;
+    if(precision==3){
+        chara.loadFromFile("characters_low/#.jpg");
+    }
+    else{
+        chara.loadFromFile("characters/#.jpg");
+    }
+    sf::Vector2 dim_chara = chara.getSize();
 
     std::fstream input(path_table);
     for(std::string line; getline(input,line);){
         modulo = h%(dim_chara.y+1);
         if(modulo==0){
-               list_matrix_characters[h/(dim_chara.y+1)][0] = line[0];
+            list_matrix_characters[h/(dim_chara.y+1)][0] = line[0];
         }
         else{
-                list_matrix_characters[(h-modulo)/(dim_chara.y+1)][1]+=line;
+            list_matrix_characters[(h-modulo)/(dim_chara.y+1)][1]+=line;
         }
         h++;
     }
@@ -244,10 +258,15 @@ int frame_to_ascii(int precision, int color_selection, bool isTricolor){
     sf::Vector2 dim_video = image.getSize();
 
     sf::Image chara;
-    chara.loadFromFile("characters/#.jpg");
+    if(precision==3){
+        chara.loadFromFile("characters_low/#.jpg");
+    }
+    else{
+        chara.loadFromFile("characters/#.jpg");
+    }
     sf::Vector2 dim_chara = chara.getSize();
 
-    std::vector<std::vector<std::string>> character_matrix = txt_to_list();
+    std::vector<std::vector<std::string>> character_matrix = txt_to_list(precision);
 
     int dim_video_x = dim_video.x-(dim_video.x%dim_chara.x);
     int dim_video_y = dim_video.y-(dim_video.y%dim_chara.y);
