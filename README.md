@@ -1,6 +1,6 @@
 # Video to ASCII
 
-Convert any bicolor video (Black and White) and tricolor video (Black, White and Grey) into an ascii version. The program focuses on forms rather than color derivatives. Works on Linux and Windows !
+Convert any bicolor video (Black and White) and tricolor video (Black, White and Grey) into an ascii version. The program focuses on forms rather than color derivatives.
 
 ## Table of Contents
 1. [Usage](#usage)
@@ -9,11 +9,14 @@ Convert any bicolor video (Black and White) and tricolor video (Black, White and
 3. [Libraries](#libraries)
 
 ## Usage
-1. Put your video in the folder.
 
-2. Run main.exe
+1. Compile everything using the Namefile.
 
-3. After the rendering of the video is finished, there will be a video called ASCII_+the original name.
+2. Put your video in the folder.
+
+3. Run main
+
+4. After the rendering of the video is finished, there will be a video called ASCII_+the original name.
 
 Example of rendering : 
 * [Bicolor](https://youtu.be/N1hLC0iY8EU) 
@@ -44,3 +47,4 @@ The libraries used within the project:
 * [SLD](https://www.libsdl.org/)
 * [SFML](https://www.sfml-dev.org/index-fr.php)
 * [OpenCV](https://opencv.org/)
+* [GTK](https://www.gtk.org/)

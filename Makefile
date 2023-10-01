@@ -4,9 +4,15 @@ LDFLAGS = -L/usr/local/lib
 LDLIBS = -lsfml-graphics -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
 LDLIBS_OPENCV = -lopencv_calib3d -lopencv_highgui -lopencv_core -lopencv_video -lopencv_videoio -lopencv_photo -lopencv_imgcodecs -lopencv_imgproc
 
-all : main
+all : VideoToASCII videoFPSCounter main
 
-main: main.cpp ascii_to_frame.o chara_to_matrix.o frame_to_ascii.o frame_to_video.o loading_bar.o video_to_frame.o
+main : main.c
+	gcc $< -o $@ $(shell pkg-config --cflags --libs gtk+-3.0)
+
+videoFPSCounter: videoFPSCounter.cpp
+	$(CXX) $< -o $@ $(CXXFLAGS) $(LDFLAGS) $(LDLIBS_OPENCV)
+
+VideoToASCII: VideoToASCII.cpp ascii_to_frame.o chara_to_matrix.o frame_to_ascii.o frame_to_video.o loading_bar.o video_to_frame.o
 	$(CXX) $^ -o $@ $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) $(LDLIBS_OPENCV)
 
 ascii_to_frame.o: ascii_to_frame.cpp
@@ -29,4 +35,8 @@ video_to_frame.o: video_to_frame.cpp
 
 clean:
 	rm *.o
+	rm VideoToASCII
+	rm videoFPSCounter
+	rm *.txt
+	rm *.mp4
 	rm main
