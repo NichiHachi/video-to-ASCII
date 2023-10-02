@@ -1,6 +1,6 @@
 # Video to ASCII
 
-Convert any bicolor video (Black and White) and tricolor video (Black, White and Grey) into an ascii version. The program focuses on forms rather than color derivatives.
+Convert any bicolor video (Black or White) and tricolor video (Black, White or Grey) into an ascii version. The program focuses on forms rather than color derivatives.
 
 ## Table of Contents
 1. [Usage](#usage)

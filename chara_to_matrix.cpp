@@ -6,7 +6,7 @@
 
 namespace fs = std::filesystem;
 
-void writeFile(std::fstream &table, sf::Image image, int dimX, int dimY){
+void write_file(std::fstream &table, sf::Image image, int dimX, int dimY){
     sf::Color color;
     for(int y=0;y<dimY;y++){
         for(int x=0;x<dimX;x++){
@@ -60,12 +60,11 @@ void image_to_matrix_txt(fs::path path_character,std::string name){
         else{
             table << name[0] << std::endl;
         }
-        writeFile(table, image, dim.x, dim.y);
+        write_file(table, image, dim.x, dim.y);
     table.close();
 }
 
 void image_convert(std::string path_chara){
-    std::cout << "test";
     image_to_matrix_txt(path_chara+"/#.jpg", "#.jpg");
     image_to_matrix_txt(path_chara+"/space.jpg", "space.jpg");
     for(const auto & entry : fs::directory_iterator(path_chara)){

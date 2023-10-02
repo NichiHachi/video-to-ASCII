@@ -2,44 +2,43 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
-#include <dirent.h>
 #include <pthread.h>
 
-static char* text_entry;
-static int FPS_entry = 0;
-static int FPSMax = 0;
-static int color_option = 1;
-static int color_sub_option = 1;
-static int accuracy_option = 1;
-static int canLaunch = 0;
-static int frameNumber = 0;
-static int ASCIINumber = 0;
-static int frameASCIINumber = 0;
-static GtkWidget *window;
-static GtkWidget *grid;
-static GtkWidget *entry;
-static GtkWidget *entryFPS;
-static GtkWidget *option1_radio;
-static GtkWidget *option2_radio;
-static GtkWidget *sub1_option1_radio;
-static GtkWidget *sub1_option2_radio;
-static GtkWidget *sub2_option1_radio;
-static GtkWidget *sub2_option2_radio;
-static GtkWidget *sub2_option3_radio;
-static GtkWidget *accuracy_option1_radio;
-static GtkWidget *accuracy_option2_radio;
-static GtkWidget *accuracy_option3_radio;
-static GtkWidget *launchButton; 
-static GtkWidget *progressbarASCII;
-static GtkWidget *progressbarFrameASCII;
-static guint update_timerASCII = 0;
-static guint update_timerFrameASCII = 0;
-static GtkWidget *quitButton;
-static int labelASCIIAdded = 0;
-static int labelFrameASCIIAdded = 0;
+char* text_entry;
+int FPS_entry = 0;
+int FPSMax = 0;
+int color_option = 1;
+int color_sub_option = 1;
+int accuracy_option = 1;
+int canLaunch = 0;
+int frame_number  = 0;
+int ASCII_number  = 0;
+int frame_final_product_number = 0;
+GtkWidget *window;
+GtkWidget *grid;
+GtkWidget *entry;
+GtkWidget *entryFPS;
+GtkWidget *color_button_1;
+GtkWidget *color_button_2;
+GtkWidget *bicolor_button_1;
+GtkWidget *bicolor_button_2;
+GtkWidget *tricolor_button_1;
+GtkWidget *tricolor_button_2;
+GtkWidget *tricolor_button_3;
+GtkWidget *accuracy_button_1;
+GtkWidget *accuracy_button_2;
+GtkWidget *accuracy_button_3;
+GtkWidget *launchButton; 
+GtkWidget *progressbar_ASCII;
+GtkWidget *progressbar_frame_final_product;
+guint update_timerASCII = 0;
+guint update_timer_frame_final_product = 0;
+GtkWidget *quitButton;
+int label_ASCII_added = 0;
+int label_frame_final_product_added = 0;
 
 
-static void color_sub_option_button(GtkToggleButton *button, gpointer data){
+void color_sub_option_button(GtkToggleButton *button, gpointer data){
     if (gtk_toggle_button_get_active(button)){
         char *label = gtk_button_get_label(GTK_BUTTON(button));
         if(strcmp(label,"White background with Black font")==0 || strcmp(label,"White background with Black and Grey font")==0){
@@ -54,64 +53,64 @@ static void color_sub_option_button(GtkToggleButton *button, gpointer data){
     }
 }
 
-static void show_additional_radios(GtkToggleButton *button, gpointer data) {
+void show_bicolor_button(GtkToggleButton *button, gpointer data) {
     if (gtk_toggle_button_get_active(button)){
-        if (!sub1_option1_radio) {
+        if (!bicolor_button_1) {
             color_option = 1;
             color_sub_option = 1;
             
-            sub1_option1_radio = gtk_radio_button_new_with_label(NULL, "White background with Black font");
-            sub1_option2_radio = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(sub1_option1_radio), "Black background with White font");
+            bicolor_button_1 = gtk_radio_button_new_with_label(NULL, "White background with Black font");
+            bicolor_button_2 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(bicolor_button_1), "Black background with White font");
 
-            g_signal_connect(G_OBJECT(sub1_option1_radio), "toggled", G_CALLBACK(color_sub_option_button), NULL);
-            g_signal_connect(G_OBJECT(sub1_option2_radio), "toggled", G_CALLBACK(color_sub_option_button), NULL);
+            g_signal_connect(G_OBJECT(bicolor_button_1), "toggled", G_CALLBACK(color_sub_option_button), NULL);
+            g_signal_connect(G_OBJECT(bicolor_button_2), "toggled", G_CALLBACK(color_sub_option_button), NULL);
 
-            gtk_grid_attach(GTK_GRID(grid), sub1_option1_radio, 0, 11, 1, 1);
-            gtk_grid_attach(GTK_GRID(grid), sub1_option2_radio, 0, 12, 1, 1);
+            gtk_grid_attach(GTK_GRID(grid), bicolor_button_1, 0, 11, 1, 1);
+            gtk_grid_attach(GTK_GRID(grid), bicolor_button_2, 0, 12, 1, 1);
 
             gtk_widget_show_all(window);
         }
     } 
     else {
-        if (sub1_option1_radio) {
-            gtk_widget_destroy(sub1_option1_radio);
-            gtk_widget_destroy(sub1_option2_radio);
+        if (bicolor_button_1) {
+            gtk_widget_destroy(bicolor_button_1);
+            gtk_widget_destroy(bicolor_button_2);
         }
     }
 }
 
-static void show_additional_radios_bis(GtkToggleButton *button, gpointer data) {
-    if (gtk_toggle_button_get_active(button)) {
-        if (!sub2_option1_radio) {
+void show_tricolor_button(GtkToggleButton *button, gpointer data) {
+    if(gtk_toggle_button_get_active(button)) {
+        if(!tricolor_button_1) {
             color_option = 2;
             color_sub_option = 1;
             
-            sub2_option1_radio = gtk_radio_button_new_with_label(NULL, "White background with Black and Grey font");
-            sub2_option2_radio = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(sub2_option1_radio), "Black background with White and Grey font");
-            sub2_option3_radio = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(sub2_option1_radio), "Grey background with Black and White font");
+            tricolor_button_1 = gtk_radio_button_new_with_label(NULL, "White background with Black and Grey font");
+            tricolor_button_2 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(tricolor_button_1), "Black background with White and Grey font");
+            tricolor_button_3 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(tricolor_button_1), "Grey background with Black and White font");
 
 
-            g_signal_connect(G_OBJECT(sub2_option1_radio), "toggled", G_CALLBACK(color_sub_option_button), NULL);
-            g_signal_connect(G_OBJECT(sub2_option2_radio), "toggled", G_CALLBACK(color_sub_option_button), NULL);
-            g_signal_connect(G_OBJECT(sub2_option3_radio), "toggled", G_CALLBACK(color_sub_option_button), NULL);
+            g_signal_connect(G_OBJECT(tricolor_button_1), "toggled", G_CALLBACK(color_sub_option_button), NULL);
+            g_signal_connect(G_OBJECT(tricolor_button_2), "toggled", G_CALLBACK(color_sub_option_button), NULL);
+            g_signal_connect(G_OBJECT(tricolor_button_3), "toggled", G_CALLBACK(color_sub_option_button), NULL);
 
-            gtk_grid_attach(GTK_GRID(grid), sub2_option1_radio, 0, 11, 1, 1);
-            gtk_grid_attach(GTK_GRID(grid), sub2_option2_radio, 0, 12, 1, 1);
-            gtk_grid_attach(GTK_GRID(grid), sub2_option3_radio, 0, 13, 1, 1);
+            gtk_grid_attach(GTK_GRID(grid), tricolor_button_1, 0, 11, 1, 1);
+            gtk_grid_attach(GTK_GRID(grid), tricolor_button_2, 0, 12, 1, 1);
+            gtk_grid_attach(GTK_GRID(grid), tricolor_button_3, 0, 13, 1, 1);
 
             gtk_widget_show_all(window);
         }
     } 
     else {
-        if (sub2_option1_radio) {
-            gtk_widget_destroy(sub2_option1_radio);
-            gtk_widget_destroy(sub2_option2_radio);
-            gtk_widget_destroy(sub2_option3_radio);
+        if(tricolor_button_1) {
+            gtk_widget_destroy(tricolor_button_1);
+            gtk_widget_destroy(tricolor_button_2);
+            gtk_widget_destroy(tricolor_button_3);
         }
     }
 }
 
-static void get_entry_FPS(GtkEntry *entryFPS, gpointer data){
+void get_entry_FPS(GtkEntry *entryFPS, gpointer data){
     const gchar *text = gtk_entry_get_text(entryFPS);
     FPS_entry = atoi(text);
     if(FPS_entry<=0 || FPS_entry>FPSMax){
@@ -119,13 +118,13 @@ static void get_entry_FPS(GtkEntry *entryFPS, gpointer data){
     }
 }
 
-static void get_entry_text(GtkEntry *entry, gpointer data) {
+void get_entry_video_name(GtkEntry *entry, gpointer data) {
     text_entry = gtk_entry_get_text(entry);
     int isCorrect = 1;
 
     if (access(text_entry, F_OK) != -1) {
         char command[512];
-        sprintf(command, "./videoFPSCounter %s", text_entry);
+        sprintf(command, "./video_FPS_counter %s", text_entry);
         system(command);
 
         FILE *file = fopen("FPS.txt", "r");
@@ -167,13 +166,13 @@ static void get_entry_text(GtkEntry *entry, gpointer data) {
     gtk_widget_show_all(window);
 }
 
-static void accuracy_option_button(GtkToggleButton *button, gpointer data){
+void accuracy_option_button(GtkToggleButton *button, gpointer data){
     if(gtk_toggle_button_get_active(button)){
         const gchar *label = gtk_button_get_label(GTK_BUTTON(button));
-        if(label=="Normal"){
+        if(strcmp(label,"Normal")==0){
             accuracy_option = 1;
         }
-        else if(label=="High"){
+        else if(strcmp(label,"High")==0){
             accuracy_option = 2;
         }
         else{
@@ -182,7 +181,7 @@ static void accuracy_option_button(GtkToggleButton *button, gpointer data){
     }
 }
 
-static void countFrame(){
+void count_frame(){
     DIR *dir;
     struct dirent *entry;
     int count = 0;
@@ -196,10 +195,10 @@ static void countFrame(){
     }
 
     closedir(dir);
-    frameNumber = count;
+    frame_number  = count;
 }
 
-static void countASCII(){
+void count_ascii(){
     DIR *dir;
     struct dirent *entry;
     int count = 0;
@@ -218,10 +217,10 @@ static void countASCII(){
     }
 
     closedir(dir);
-    ASCIINumber = count;
+    ASCII_number  = count;
 }
 
-static void countFrameASCII(){
+void count_frame_final_product(){
     DIR *dir;
     struct dirent *entry;
     int count = 0;
@@ -235,38 +234,38 @@ static void countFrameASCII(){
     }
 
     closedir(dir);
-    frameASCIINumber = count;
+    frame_final_product_number = count;
 }
 
-static gboolean update_progressASCII(GtkProgressBar *progressbar){
-    countASCII();
-    if(ASCIINumber!=0){
-        countASCII();
-        if(frameNumber==0){
-            countFrame();
+gboolean update_progressASCII(GtkProgressBar *progressbar){
+    count_ascii();
+    if(ASCII_number!=0){
+        count_ascii();
+        if(frame_number ==0){
+            count_frame();
             GtkWidget *labelToRemove = gtk_grid_get_child_at(GTK_GRID(grid), 0, 0);
             if (labelToRemove != NULL) {
                 gtk_container_remove(GTK_CONTAINER(grid), labelToRemove);
             }
             char labelFrameTotal[128];
-            sprintf(labelFrameTotal, "%i frames extracted.", frameNumber);
+            sprintf(labelFrameTotal, "%i frames extracted.", frame_number );
             GtkWidget *labelFrame = gtk_label_new(labelFrameTotal);
             gtk_grid_attach(GTK_GRID(grid), labelFrame, 0, 0, 1, 1);
         }
-        if(!labelASCIIAdded){
+        if(!label_ASCII_added){
             GtkWidget *labelASCII = gtk_label_new("Transforming frames into ASCII...");
             gtk_grid_attach(GTK_GRID(grid), labelASCII, 0, 50, 1, 1);
             GtkWidget *labelASCIIalt = gtk_label_new("Grab a cup of coffee and lay down, this operation takes some time !");
             gtk_grid_attach(GTK_GRID(grid), labelASCIIalt, 0, 51, 1, 1);
-            gtk_grid_attach(GTK_GRID(grid), progressbarASCII, 0, 52, 1, 1);
-            labelASCIIAdded = 1;
+            gtk_grid_attach(GTK_GRID(grid), progressbar_ASCII, 0, 52, 1, 1);
+            label_ASCII_added = 1;
         }
-        double ratio = (double)ASCIINumber/frameNumber;
+        double ratio = (double)ASCII_number/frame_number ;
         double fraction = gtk_progress_bar_get_fraction(GTK_PROGRESS_BAR(progressbar));
         if(ratio!=fraction){
             gtk_progress_bar_set_fraction(progressbar,ratio);
         }
-        if(ASCIINumber==frameNumber){
+        if(ASCII_number==frame_number ){
             return FALSE;
         }
         gtk_widget_show_all(window);
@@ -274,21 +273,21 @@ static gboolean update_progressASCII(GtkProgressBar *progressbar){
     return TRUE;
 }
 
-static gboolean update_progressFrameASCII(GtkProgressBar *progressbar){
-    if(frameNumber!=0 && ASCIINumber==frameNumber){
-        countFrameASCII();
-        if(!labelFrameASCIIAdded){
-            GtkWidget *labelFrameASCII = gtk_label_new("Transforming ASCII into frames...");
-            gtk_grid_attach(GTK_GRID(grid), labelFrameASCII, 0, 54, 1, 1);
-            gtk_grid_attach(GTK_GRID(grid), progressbarFrameASCII, 0, 55, 1, 1);
-            labelFrameASCIIAdded = 1;
+gboolean update_progressframe_final_product(GtkProgressBar *progressbar){
+    if(frame_number !=0 && ASCII_number==frame_number ){
+        count_frame_final_product();
+        if(!label_frame_final_product_added){
+            GtkWidget *labelframe_final_product = gtk_label_new("Transforming ASCII into frames...");
+            gtk_grid_attach(GTK_GRID(grid), labelframe_final_product, 0, 54, 1, 1);
+            gtk_grid_attach(GTK_GRID(grid), progressbar_frame_final_product, 0, 55, 1, 1);
+            label_frame_final_product_added = 1;
         }
-        double ratio = (double)frameASCIINumber/(double)frameNumber;
+        double ratio = (double)frame_final_product_number/(double)frame_number ;
         double fraction = gtk_progress_bar_get_fraction(GTK_PROGRESS_BAR(progressbar));
         if(ratio!=fraction){
             gtk_progress_bar_set_fraction(progressbar,ratio);
         }
-        if(frameASCIINumber>=frameNumber){
+        if(frame_final_product_number>=frame_number ){
             return FALSE;
         }
         gtk_widget_show_all(window);
@@ -296,46 +295,45 @@ static gboolean update_progressFrameASCII(GtkProgressBar *progressbar){
     return TRUE;
 }
 
-
-static void quit(GtkWidget *widget, gpointer data) {
+void quit(GtkWidget *widget, gpointer data) {
     gtk_main_quit();
 }
 
-static void addQuitButton() {
+void add_quit_button() {
     quitButton = gtk_button_new_with_label("Quit");
     g_signal_connect(quitButton, "clicked", G_CALLBACK(quit), NULL);
     gtk_grid_attach(GTK_GRID(grid), quitButton, 0, 80, 1, 1);
     gtk_widget_show_all(window);
 }
 
-static void VideoToASCIIThread() {
+void VideoToASCII_thread() {
     char command[128];
     sprintf(command, "./VideoToASCII %s %i %i %i %i", text_entry, FPS_entry, color_option, color_sub_option, accuracy_option);
     system(command);    
 
-    g_idle_add((GSourceFunc)addQuitButton, NULL);
+    g_idle_add((GSourceFunc)add_quit_button, NULL);
 }
 
-static void launch(GtkButton *button,gpointer widget){
+void launch(GtkButton *button,gpointer widget){
     if(FPS_entry!=0 && color_option!=0){
         window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
         gtk_window_set_title(GTK_WINDOW(window), "VIDEO TO ASCII BY NICHI HACHI");
         g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
         gtk_window_set_default_size(GTK_WINDOW(window), 400, 300);
   
-        GThread *background_thread = g_thread_new("BackgroundThread", (GThreadFunc)VideoToASCIIThread, NULL);
+        GThread *background_thread = g_thread_new("BackgroundThread", (GThreadFunc)VideoToASCII_thread, NULL);
 
         grid = gtk_grid_new();
         gtk_container_add(GTK_CONTAINER(window), grid);
 
-        GtkWidget *labelFrameASCII = gtk_label_new("Extracting frames from the video...");
-        gtk_grid_attach(GTK_GRID(grid), labelFrameASCII, 0, 0, 1, 1);
+        GtkWidget *labelframe_final_product = gtk_label_new("Extracting frames from the video...");
+        gtk_grid_attach(GTK_GRID(grid), labelframe_final_product, 0, 0, 1, 1);
 
-        progressbarASCII = GTK_PROGRESS_BAR(gtk_progress_bar_new());
-        progressbarFrameASCII = GTK_PROGRESS_BAR(gtk_progress_bar_new());
+        progressbar_ASCII = GTK_PROGRESS_BAR(gtk_progress_bar_new());
+        progressbar_frame_final_product = GTK_PROGRESS_BAR(gtk_progress_bar_new());
 
-        update_timerASCII = g_timeout_add(1000, (GSourceFunc)update_progressASCII, progressbarASCII);
-        update_timerFrameASCII = g_timeout_add(1000, (GSourceFunc)update_progressFrameASCII, progressbarFrameASCII);
+        update_timerASCII = g_timeout_add(1000, (GSourceFunc)update_progressASCII, progressbar_ASCII);
+        update_timer_frame_final_product = g_timeout_add(1000, (GSourceFunc)update_progressframe_final_product, progressbar_frame_final_product);
 
         gtk_widget_hide(widget);
         gtk_widget_show_all(window);
@@ -361,7 +359,7 @@ int main(int argc, char *argv[]) {
     gtk_entry_set_placeholder_text(GTK_ENTRY(entry), "Enter the video name with format");
     gtk_widget_set_size_request(entry, 300, -1);
     
-    g_signal_connect(entry, "changed", G_CALLBACK(get_entry_text), NULL);
+    g_signal_connect(entry, "changed", G_CALLBACK(get_entry_video_name), NULL);
 
     gtk_grid_attach(GTK_GRID(grid), entry, 0, 1, 2, 1);
 
@@ -369,32 +367,32 @@ int main(int argc, char *argv[]) {
     GtkWidget *labelColor = gtk_label_new("Color of the video");
     gtk_grid_attach(GTK_GRID(grid), labelColor, 0, 9, 1, 1);
 
-    option1_radio = gtk_radio_button_new_with_label(NULL, "Bicolor");
-    option2_radio = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(option1_radio), "Tricolor");
+    color_button_1 = gtk_radio_button_new_with_label(NULL, "Bicolor");
+    color_button_2 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(color_button_1), "Tricolor");
 
-    g_signal_connect(G_OBJECT(option1_radio), "toggled", G_CALLBACK(show_additional_radios), NULL);
-    g_signal_connect(G_OBJECT(option2_radio), "toggled", G_CALLBACK(show_additional_radios_bis), NULL);
+    g_signal_connect(G_OBJECT(color_button_1), "toggled", G_CALLBACK(show_bicolor_button), NULL);
+    g_signal_connect(G_OBJECT(color_button_2), "toggled", G_CALLBACK(show_tricolor_button), NULL);
 
-    gtk_grid_attach(GTK_GRID(grid), option1_radio, 0, 10, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), option2_radio, 1, 10, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), color_button_1, 0, 10, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), color_button_2, 1, 10, 1, 1);
 
 
     GtkWidget *labelAccuracy = gtk_label_new("Degree of accuracy");
     gtk_grid_attach(GTK_GRID(grid), labelAccuracy, 0, 19, 1, 1);
 
-    accuracy_option1_radio = gtk_radio_button_new_with_label(NULL, "Normal");
-    accuracy_option2_radio = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(accuracy_option1_radio), "High");
-    accuracy_option3_radio = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(accuracy_option1_radio), "Very high");
+    accuracy_button_1 = gtk_radio_button_new_with_label(NULL, "Normal");
+    accuracy_button_2 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(accuracy_button_1), "High");
+    accuracy_button_3 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(accuracy_button_1), "Very high");
 
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(accuracy_option1_radio), TRUE);
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(accuracy_button_1), TRUE);
 
-    g_signal_connect(G_OBJECT(accuracy_option1_radio), "toggled", G_CALLBACK(accuracy_option_button), NULL);
-    g_signal_connect(G_OBJECT(accuracy_option2_radio), "toggled", G_CALLBACK(accuracy_option_button), NULL);
-    g_signal_connect(G_OBJECT(accuracy_option3_radio), "toggled", G_CALLBACK(accuracy_option_button), NULL);
+    g_signal_connect(G_OBJECT(accuracy_button_1), "toggled", G_CALLBACK(accuracy_option_button), NULL);
+    g_signal_connect(G_OBJECT(accuracy_button_2), "toggled", G_CALLBACK(accuracy_option_button), NULL);
+    g_signal_connect(G_OBJECT(accuracy_button_3), "toggled", G_CALLBACK(accuracy_option_button), NULL);
 
-    gtk_grid_attach(GTK_GRID(grid), accuracy_option1_radio, 0, 20, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), accuracy_option2_radio, 0, 21, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), accuracy_option3_radio, 0, 22, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), accuracy_button_1, 0, 20, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), accuracy_button_2, 0, 21, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), accuracy_button_3, 0, 22, 1, 1);
 
     launchButton = gtk_button_new_with_label("Launch");
     g_signal_connect(G_OBJECT(launchButton), "clicked", G_CALLBACK(launch), (gpointer) window);

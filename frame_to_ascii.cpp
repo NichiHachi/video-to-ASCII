@@ -5,8 +5,6 @@
 #include <fstream>
 #include <vector>
 
-#include "loading_bar.hpp"
-
 namespace fs = std::filesystem;
 
 const std::string path_folder_frame_video = "frame_video";
@@ -291,15 +289,9 @@ int frame_to_ascii(int precision, int color_selection, bool isTricolor){
         }
         
         std::vector<std::vector<char>> arr(dim_video_x, std::vector<char>(dim_video_y));
-        int percent = -1;
         for(int frame_number=0; frame_number<total_frame;frame_number++){
             std::vector<std::vector<char>> arr = bicolor_image_maping_matrix(path_folder_frame_video+'/'+std::to_string(frame_number)+".jpg", dim_video_x, dim_video_y);
             bicolor_frame_to_ascii(character_matrix,arr,std::to_string(frame_number), precision, color_factor, dim_video_x, dim_video_y, dim_chara.x, dim_chara.y);
-
-            if(percent != 100*(frame_number+1)/total_frame){
-                percent = 100*(frame_number+1)/total_frame;
-                loading_bar(percent);
-            }
         }
     }
     else{
@@ -318,17 +310,10 @@ int frame_to_ascii(int precision, int color_selection, bool isTricolor){
         }
         
         std::vector<std::vector<char>> arr(dim_video_x, std::vector<char>(dim_video_y));
-        int percent = -1;
         for(int frame_number=0; frame_number<total_frame;frame_number++){
             std::vector<std::vector<char>> arr = tricolor_image_maping_matrix(path_folder_frame_video+'/'+std::to_string(frame_number)+".jpg", dim_video_x, dim_video_y);
             tricolor_frame_to_ascii(character_matrix,arr,color_1,color_2,std::to_string(frame_number), precision, dim_video_x, dim_video_y, dim_chara.x, dim_chara.y);
-
-            if(percent != 100*(frame_number+1)/total_frame){
-                percent = 100*(frame_number+1)/total_frame;
-                loading_bar(percent);
-            }
         }
     }
-    std::cout << std::endl;
     return 1;
 }

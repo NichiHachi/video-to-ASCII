@@ -3,6 +3,10 @@
 #include <fstream>
 
 int main(int argc, char *argv[]) {
+    if(argc==1){
+        return 1;
+    }
+    
     std::string videoFilePath = argv[1];
     cv::VideoCapture cap(videoFilePath);
 

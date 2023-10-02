@@ -6,8 +6,6 @@
 #include <fstream>
 #include <iostream>
 
-#include "loading_bar.hpp"
-
 namespace fs = std::filesystem;
 
 const std::string file_storage_ascii_path = "frame_ascii/";
@@ -18,7 +16,7 @@ const int grey_c = 190;
 const int white_c = 255;
 const int black_c = 0;
 
-int ascii_to_frame(int color_selection){
+int ascii_to_frame_bicolor(int color_selection){
     TTF_Init();
 
     int font_size = 15;
@@ -52,8 +50,6 @@ int ascii_to_frame(int color_selection){
     rect.x = 0;  
     rect.w = image_x*font_size*factor_size/10; 
     
-    int percent=-1;
-    std::cout <<  "Transforming ASCII into frames..." << std::endl;
     int frame_number = 0;
     int total_frame = std::distance(fs::directory_iterator("frame_ascii"), fs::directory_iterator{});
     for(const auto & entry : fs::directory_iterator(file_storage_ascii_path)){
@@ -78,10 +74,6 @@ int ascii_to_frame(int color_selection){
         SDL_FreeSurface(frame);
 
         frame_number++;
-        if(percent != 100*frame_number/total_frame){
-            percent = 100*frame_number/total_frame;
-            loading_bar(percent);
-        }
     }
     TTF_CloseFont(font);
     TTF_Quit();
@@ -133,8 +125,7 @@ int ascii_to_frame_tricolor(int color_selection){
 
     SDL_Rect rect; 
     rect.x = 0;  
-    rect.w = image_x*font_size*factor_size/10; 
-    int percent=-1;
+    rect.w = image_x*font_size*factor_size/10;
 
     int total_frame = std::distance(fs::directory_iterator("frame_ascii_color_1"), fs::directory_iterator{});
     for(int frame_number = 0; frame_number < total_frame; frame_number++){
@@ -170,11 +161,6 @@ int ascii_to_frame_tricolor(int color_selection){
     
         IMG_SaveJPG(frame,(file_depot_path+std::to_string(frame_number)+".jpg").c_str(),100);
         SDL_FreeSurface(frame);
-
-        if(percent != 100*(frame_number+1)/total_frame){
-            percent = 100*(frame_number+1)/total_frame;
-            loading_bar(percent);
-        }
     }
     TTF_CloseFont(font);
     TTF_Quit();
