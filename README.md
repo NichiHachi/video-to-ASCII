@@ -44,7 +44,7 @@ You can add, remove and modify any character in the ```characters``` folder. The
 
 ## Libraries
 The libraries used within the project:
-* [SLD](https://www.libsdl.org/)
+* [SDL](https://www.libsdl.org/)
 * [SFML](https://www.sfml-dev.org/index-fr.php)
 * [OpenCV](https://opencv.org/)
 * [GTK](https://www.gtk.org/)
