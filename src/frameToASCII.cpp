@@ -7,11 +7,13 @@
 
 namespace fs = std::filesystem;
 
-const std::string path_folder_frame_video = "frame_video";
-const std::string path_folder_ascii = "frame_ascii";
-const std::string path_folder_ascii_color_1 = "frame_ascii_color_1";
-const std::string path_folder_ascii_color_2 = "frame_ascii_color_2";
+const std::string path_folder_frame_video = "frame-video";
+const std::string path_folder_ascii = "frame-ASCII";
+const std::string path_folder_ascii_color_1 = "frame-ASCII-color-1";
+const std::string path_folder_ascii_color_2 = "frame-ASCII-color-2";
 const std::string path_table = "characters_matrix_table.txt";
+const std::string path_char_low = "char/characters-low";
+const std::string path_char_normal = "char/characters-normal";
 
 std::vector<std::vector<char>> bicolor_image_maping_matrix(std::string path_file, int dim_array_x, int dim_array_y){
     sf::Image image;
@@ -58,10 +60,10 @@ void bicolor_frameToASCII(std::vector<std::vector<std::string>>list_matrix_chara
     int number_y_box = dim_video_y/dim_y_chara*precision;
     int nbr_character;
     if(precision==3){
-        nbr_character = std::distance(fs::directory_iterator("characters_low"), fs::directory_iterator{});
+        nbr_character = std::distance(fs::directory_iterator(path_char_low), fs::directory_iterator{});
     }
     else{
-        nbr_character = std::distance(fs::directory_iterator("characters"), fs::directory_iterator{});
+        nbr_character = std::distance(fs::directory_iterator(path_char_normal), fs::directory_iterator{});
     }
     int score;
     int max_score;
@@ -130,7 +132,7 @@ void bicolor_frameToASCII(std::vector<std::vector<std::string>>list_matrix_chara
 void tricolor_frameToASCII(std::vector<std::vector<std::string>>list_matrix_characters,std::vector<std::vector<char>>matrix_image, char color_1, char color_2, std::string name_file, int precision, int dim_video_x, int dim_video_y, int dim_x_chara, int dim_y_chara){
     int number_x_box = dim_video_x/dim_x_chara*precision;
     int number_y_box = dim_video_y/dim_y_chara*precision;
-    int nbr_character = std::distance(fs::directory_iterator("characters"), fs::directory_iterator{});
+    int nbr_character = std::distance(fs::directory_iterator(path_char_normal), fs::directory_iterator{});
     int score_color_1;
     int score_color_2;
     int max_score_1;
@@ -222,17 +224,17 @@ void tricolor_frameToASCII(std::vector<std::vector<std::string>>list_matrix_char
 }
 
 std::vector<std::vector<std::string>> txt_to_list(int precision){
-    int nbr_character = std::distance(fs::directory_iterator("characters"), fs::directory_iterator{});
+    int nbr_character = std::distance(fs::directory_iterator(path_char_normal), fs::directory_iterator{});
     std::vector<std::vector<std::string>> list_matrix_characters(nbr_character, std::vector<std::string>(2,""));
     int h=0;
     int modulo;
     
     sf::Image chara;
     if(precision==3){
-        chara.loadFromFile("characters_low/#.jpg");
+        chara.loadFromFile(path_char_low+"/#.jpg");
     }
     else{
-        chara.loadFromFile("characters/#.jpg");
+        chara.loadFromFile(path_char_normal+"/#.jpg");
     }
     sf::Vector2 dim_chara = chara.getSize();
 
@@ -252,15 +254,15 @@ std::vector<std::vector<std::string>> txt_to_list(int precision){
 
 int frameToASCII(int precision, int color_selection, bool isTricolor){
     sf::Image image;
-    image.loadFromFile("frame_video/0.jpg");
+    image.loadFromFile(path_folder_frame_video + "/0.jpg");
     sf::Vector2 dim_video = image.getSize();
 
     sf::Image chara;
     if(precision==3){
-        chara.loadFromFile("characters_low/#.jpg");
+        chara.loadFromFile(path_char_low+"/#.jpg");
     }
     else{
-        chara.loadFromFile("characters/#.jpg");
+        chara.loadFromFile(path_char_normal+"/#.jpg");
     }
     sf::Vector2 dim_chara = chara.getSize();
 

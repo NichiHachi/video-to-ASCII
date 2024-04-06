@@ -1,9 +1,11 @@
 .vscode
 .idea
-*.o
-main
 *.txt
-frame-ASCII
-frame-video
-frame-final-video
-video
+/bin/
+/obj/
+/frame-ASCII/
+/frame-video/
+/frame-final-video/
+/videoASCII/
+/video/*
+!/video/.gitkeep

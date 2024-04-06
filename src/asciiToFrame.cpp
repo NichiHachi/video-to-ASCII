@@ -7,10 +7,10 @@
 
 namespace fs = std::filesystem;
 
-const std::string file_storage_ascii_path = "../frame-ASCII";
-const std::string file_storage_ascii_color_1_path = "../frame-ASCII-color-1";
-const std::string file_storage_ascii_color_2_path = "../frame-ascii-color-2";
-const std::string file_depot_path = "../frame-final-video";
+const std::string file_storage_ascii_path = "frame-ASCII";
+const std::string file_storage_ascii_color_1_path = "frame-ASCII-color-1";
+const std::string file_storage_ascii_color_2_path = "frame-ascii-color-2";
+const std::string file_depot_path = "frame-final-video";
 const int grey_c = 190;
 const int white_c = 255;
 const int black_c = 0;
@@ -42,7 +42,7 @@ void asciiToFrameBicolor(int color_selection){
         image_y++;
     }
 
-    TTF_Font* font = TTF_OpenFont("../font/consola.ttf",font_size);
+    TTF_Font* font = TTF_OpenFont("font/consola.ttf",font_size);
 
     SDL_Rect rect; 
     rect.x = 0;  
@@ -118,13 +118,13 @@ void asciiToFrameTricolor(int color_selection){
     }
 
     Uint32 rmask,gmask,bmask,amask;
-    TTF_Font* font = TTF_OpenFont("../font/consola.ttf",font_size);
+    TTF_Font* font = TTF_OpenFont("font/consola.ttf",font_size);
 
     SDL_Rect rect; 
     rect.x = 0;  
     rect.w = image_x*font_size*factor_size/10;
 
-    int frameTotal = std::distance(fs::directory_iterator("frame_ascii_color_1"), fs::directory_iterator{});
+    int frameTotal = std::distance(fs::directory_iterator(file_storage_ascii_color_1_path), fs::directory_iterator{});
     for(int frameNumber = 0; frameNumber < frameTotal; frameNumber++){
 
         SDL_Surface* frame;

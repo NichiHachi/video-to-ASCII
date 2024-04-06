@@ -2,6 +2,6 @@
 #include <string>
 
 int main(){
-    videoToASCII("./video/video.mp4", 10, false, 1, 3, 10);
+    videoToASCII("./video/video.mp4", 1, false, 1, 3, 30);
     return 0;
 }

@@ -11,7 +11,7 @@ int videoToFrame(std::string videoPath, int frame_video, int frame_ascii){
     while (videoCapture.read(frame)) {
         if(frameCount%(how_many_frame_to_skip)==0){
             frameNumber = frameCount/how_many_frame_to_skip;
-            std::string frameFileName = "./frame-video/"+std::to_string(frameNumber) + ".jpg";
+            std::string frameFileName = "frame-video/"+std::to_string(frameNumber) + ".jpg";
             cv::imwrite(frameFileName, frame);
         }
         frameCount++;
