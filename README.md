@@ -80,13 +80,13 @@ The libraries used within the project:
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/NichiHachi/video-to-ascii.git
+    git clone https://github.com/NichiHachi/video-to-ASCII.git
     ```
 
 2. Navigate to the project directory:
     
     ```bash
-    cd video-to-ascii
+    cd video-to-ASCII
     ```
 
 3. Build the project using the makefile:

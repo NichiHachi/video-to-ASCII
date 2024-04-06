@@ -53,7 +53,7 @@ std::vector<std::vector<char>> tricolor_image_maping_matrix(std::string path_fil
     return matrix_image;
 }
 
-void bicolor_frame_to_ascii(std::vector<std::vector<std::string>>list_matrix_characters,std::vector<std::vector<char>>matrix_image, std::string name_file, int precision, int color_factor, int dim_video_x, int dim_video_y, int dim_x_chara, int dim_y_chara){
+void bicolor_frameToASCII(std::vector<std::vector<std::string>>list_matrix_characters,std::vector<std::vector<char>>matrix_image, std::string name_file, int precision, int color_factor, int dim_video_x, int dim_video_y, int dim_x_chara, int dim_y_chara){
     int number_x_box = dim_video_x/dim_x_chara*precision;
     int number_y_box = dim_video_y/dim_y_chara*precision;
     int nbr_character;
@@ -127,7 +127,7 @@ void bicolor_frame_to_ascii(std::vector<std::vector<std::string>>list_matrix_cha
     table.close();
 }
 
-void tricolor_frame_to_ascii(std::vector<std::vector<std::string>>list_matrix_characters,std::vector<std::vector<char>>matrix_image, char color_1, char color_2, std::string name_file, int precision, int dim_video_x, int dim_video_y, int dim_x_chara, int dim_y_chara){
+void tricolor_frameToASCII(std::vector<std::vector<std::string>>list_matrix_characters,std::vector<std::vector<char>>matrix_image, char color_1, char color_2, std::string name_file, int precision, int dim_video_x, int dim_video_y, int dim_x_chara, int dim_y_chara){
     int number_x_box = dim_video_x/dim_x_chara*precision;
     int number_y_box = dim_video_y/dim_y_chara*precision;
     int nbr_character = std::distance(fs::directory_iterator("characters"), fs::directory_iterator{});
@@ -250,7 +250,7 @@ std::vector<std::vector<std::string>> txt_to_list(int precision){
     return list_matrix_characters;
 }
 
-int frame_to_ascii(int precision, int color_selection, bool isTricolor){
+int frameToASCII(int precision, int color_selection, bool isTricolor){
     sf::Image image;
     image.loadFromFile("frame_video/0.jpg");
     sf::Vector2 dim_video = image.getSize();
@@ -269,7 +269,7 @@ int frame_to_ascii(int precision, int color_selection, bool isTricolor){
     int dim_video_x = dim_video.x-(dim_video.x%dim_chara.x);
     int dim_video_y = dim_video.y-(dim_video.y%dim_chara.y);
 
-    int total_frame = std::distance(fs::directory_iterator(path_folder_frame_video), fs::directory_iterator{});
+    int frameTotal = std::distance(fs::directory_iterator(path_folder_frame_video), fs::directory_iterator{});
 
     double precision_factor;
     if(precision==2){
@@ -289,9 +289,9 @@ int frame_to_ascii(int precision, int color_selection, bool isTricolor){
         }
         
         std::vector<std::vector<char>> arr(dim_video_x, std::vector<char>(dim_video_y));
-        for(int frame_number=0; frame_number<total_frame;frame_number++){
-            std::vector<std::vector<char>> arr = bicolor_image_maping_matrix(path_folder_frame_video+'/'+std::to_string(frame_number)+".jpg", dim_video_x, dim_video_y);
-            bicolor_frame_to_ascii(character_matrix,arr,std::to_string(frame_number), precision, color_factor, dim_video_x, dim_video_y, dim_chara.x, dim_chara.y);
+        for(int frameNumber=0; frameNumber<frameTotal;frameNumber++){
+            std::vector<std::vector<char>> arr = bicolor_image_maping_matrix(path_folder_frame_video+'/'+std::to_string(frameNumber)+".jpg", dim_video_x, dim_video_y);
+            bicolor_frameToASCII(character_matrix,arr,std::to_string(frameNumber), precision, color_factor, dim_video_x, dim_video_y, dim_chara.x, dim_chara.y);
         }
     }
     else{
@@ -310,9 +310,9 @@ int frame_to_ascii(int precision, int color_selection, bool isTricolor){
         }
         
         std::vector<std::vector<char>> arr(dim_video_x, std::vector<char>(dim_video_y));
-        for(int frame_number=0; frame_number<total_frame;frame_number++){
-            std::vector<std::vector<char>> arr = tricolor_image_maping_matrix(path_folder_frame_video+'/'+std::to_string(frame_number)+".jpg", dim_video_x, dim_video_y);
-            tricolor_frame_to_ascii(character_matrix,arr,color_1,color_2,std::to_string(frame_number), precision, dim_video_x, dim_video_y, dim_chara.x, dim_chara.y);
+        for(int frameNumber=0; frameNumber<frameTotal;frameNumber++){
+            std::vector<std::vector<char>> arr = tricolor_image_maping_matrix(path_folder_frame_video+'/'+std::to_string(frameNumber)+".jpg", dim_video_x, dim_video_y);
+            tricolor_frameToASCII(character_matrix,arr,color_1,color_2,std::to_string(frameNumber), precision, dim_video_x, dim_video_y, dim_chara.x, dim_chara.y);
         }
     }
     return 1;

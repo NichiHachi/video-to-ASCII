@@ -1,40 +1,49 @@
 CXX = g++
 CXX_C = gcc
-CXXFLAGS = -I/usr/include/opencv2
+CXXFLAGS = `pkg-config --cflags opencv4`
+LDLIBS_OPENCV = `pkg-config --libs opencv4`
 LDFLAGS = -L/usr/local/lib
 LDLIBS = -lsfml-graphics -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
-LDLIBS_OPENCV = -lopencv_calib3d -lopencv_highgui -lopencv_core -lopencv_video -lopencv_videoio -lopencv_photo -lopencv_imgcodecs -lopencv_imgproc
 
-all : VideoToASCII video_FPS_counter main
+OBJDIR = obj
+BINDIR = bin
+
+OBJC = $(OBJDIR)/asciiToFrame.o $(OBJDIR)/charToMatrix.o $(OBJDIR)/frameToASCII.o $(OBJDIR)/frameToVideo.o $(OBJDIR)/videoToFrame.o
+
+all : directories $(OBJDIR)/videoToASCII.o $(BINDIR)/main
+
+directories: ${OBJDIR} ${BINDIR}
+
+${OBJDIR}:
+	mkdir -p ${OBJDIR}
+
+${BINDIR}:
+	mkdir -p ${BINDIR}
+
+$(BINDIR)/main: src/main.cpp $(OBJDIR)/videoToASCII.o
+	$(CXX) $^ $(OBJC) -o $@ $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) $(LDLIBS_OPENCV)
 
 main : main.c
 	$(CXX_C) $< -o $@ $(shell pkg-config --cflags --libs gtk+-3.0)
 
-video_FPS_counter: video_FPS_counter.cpp
-	$(CXX) $< -o $@ $(CXXFLAGS) $(LDFLAGS) $(LDLIBS_OPENCV)
+$(OBJDIR)/videoToASCII.o: src/videoToASCII.cpp src/videoToASCII.h $(OBJC)
+	$(CXX) -c src/videoToASCII.cpp -o $@ $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) $(LDLIBS_OPENCV)
 
-VideoToASCII: VideoToASCII.cpp ascii_to_frame.o chara_to_matrix.o frame_to_ascii.o frame_to_video.o video_to_frame.o
-	$(CXX) $^ -o $@ $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) $(LDLIBS_OPENCV)
+$(OBJDIR)/asciiToFrame.o: src/asciiToFrame.cpp src/asciiToFrame.h
+	$(CXX) -c src/asciiToFrame.cpp -o $@
 
-ascii_to_frame.o: ascii_to_frame.cpp
-	$(CXX) -c $<
+$(OBJDIR)/charToMatrix.o: src/charToMatrix.cpp src/charToMatrix.h
+	$(CXX) -c src/charToMatrix.cpp -o $@
 
-chara_to_matrix.o: chara_to_matrix.cpp
-	$(CXX) -c $<
+$(OBJDIR)/frameToASCII.o: src/frameToASCII.cpp src/frameToASCII.h
+	$(CXX) -c src/frameToASCII.cpp -o $@
 
-frame_to_ascii.o: frame_to_ascii.cpp
-	$(CXX) -c $<
+$(OBJDIR)/frameToVideo.o: src/frameToVideo.cpp src/frameToVideo.h
+	$(CXX) -c src/frameToVideo.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS_OPENCV) -o $@
 
-frame_to_video.o: frame_to_video.cpp
-	$(CXX) -c $< $(CXXFLAGS) $(LDFLAGS) $(LDLIBS_OPENCV) -o $@
-
-video_to_frame.o: video_to_frame.cpp
-	$(CXX) -c $< $(CXXFLAGS) $(LDFLAGS) $(LDLIBS_OPENCV) -o $@
+$(OBJDIR)/videoToFrame.o: src/videoToFrame.cpp src/videoToFrame.h
+	$(CXX) -c src/videoToFrame.cpp $(CXXFLAGS) $(LDFLAGS) $(LDLIBS_OPENCV) -o $@
 
 clean:
-	rm *.o
-	rm VideoToASCII
-	rm video_FPS_counter
-	rm main
-	rm *.txt
-	rm *.mp4
+	rm -f $(OBJDIR)/*.o
+	rm -f $(BINDIR)/main

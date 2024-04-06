@@ -1,12 +1,11 @@
 #include <SFML/Graphics.hpp>
 #include <filesystem>
-#include <string>
 #include <fstream>
-#include <iostream>
+#include "charToMatrix.h"
 
 namespace fs = std::filesystem;
 
-void write_file(std::fstream &table, sf::Image image, int dimX, int dimY){
+void write_file(std::fstream &table, const sf::Image& image, int dimX, int dimY){
     sf::Color color;
     for(int y=0;y<dimY;y++){
         for(int x=0;x<dimX;x++){
@@ -24,7 +23,8 @@ void write_file(std::fstream &table, sf::Image image, int dimX, int dimY){
     }
 }
 
-void image_to_matrix_txt(fs::path path_character,std::string name){
+//TODO: Redo to not be a fucking dummy (Why doing a txt folder ????????)
+void image_to_matrix_txt(const fs::path& path_character, std::string name){
     std::fstream table;
     table.open("characters_matrix_table.txt",std::ios::app);
     sf::Image image;
@@ -64,7 +64,7 @@ void image_to_matrix_txt(fs::path path_character,std::string name){
     table.close();
 }
 
-void image_convert(std::string path_chara){
+void image_convert(const std::string& path_chara){
     image_to_matrix_txt(path_chara+"/#.jpg", "#.jpg");
     image_to_matrix_txt(path_chara+"/space.jpg", "space.jpg");
     for(const auto & entry : fs::directory_iterator(path_chara)){
@@ -74,7 +74,8 @@ void image_convert(std::string path_chara){
     }
 }
 
-int chara_to_matrix(std::string path_chara){
+//TODO: Redo the return value of the function
+int charToMatrix(const std::string& path_chara){
     std::fstream outfile("characters_matrix_table.txt");
     std::fstream table_matrix;
     table_matrix.open("characters_matrix_table.txt",std::ofstream::out | std::ofstream::trunc);

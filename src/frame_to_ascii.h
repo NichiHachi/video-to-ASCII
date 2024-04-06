@@ -1,1 +1,0 @@
-int frame_to_ascii(int precision, int color_selection, bool isTricolor);

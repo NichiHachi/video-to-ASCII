@@ -11,7 +11,7 @@ int color_option = 1;
 int color_sub_option = 1;
 int accuracy_option = 1;
 int canLaunch = 0;
-int frame_number  = 0;
+int frameNumber  = 0;
 int ASCII_number  = 0;
 int frame_final_product_number = 0;
 GtkWidget *window;
@@ -195,7 +195,7 @@ void count_frame(){
     }
 
     closedir(dir);
-    frame_number  = count;
+    frameNumber  = count;
 }
 
 void count_ascii(){
@@ -241,14 +241,14 @@ gboolean update_progressASCII(GtkProgressBar *progressbar){
     count_ascii();
     if(ASCII_number!=0){
         count_ascii();
-        if(frame_number ==0){
+        if(frameNumber ==0){
             count_frame();
             GtkWidget *labelToRemove = gtk_grid_get_child_at(GTK_GRID(grid), 0, 0);
             if (labelToRemove != NULL) {
                 gtk_container_remove(GTK_CONTAINER(grid), labelToRemove);
             }
             char labelFrameTotal[128];
-            sprintf(labelFrameTotal, "%i frames extracted.", frame_number );
+            sprintf(labelFrameTotal, "%i frames extracted.", frameNumber );
             GtkWidget *labelFrame = gtk_label_new(labelFrameTotal);
             gtk_grid_attach(GTK_GRID(grid), labelFrame, 0, 0, 1, 1);
         }
@@ -260,12 +260,12 @@ gboolean update_progressASCII(GtkProgressBar *progressbar){
             gtk_grid_attach(GTK_GRID(grid), progressbar_ASCII, 0, 52, 1, 1);
             label_ASCII_added = 1;
         }
-        double ratio = (double)ASCII_number/frame_number ;
+        double ratio = (double)ASCII_number/frameNumber ;
         double fraction = gtk_progress_bar_get_fraction(GTK_PROGRESS_BAR(progressbar));
         if(ratio!=fraction){
             gtk_progress_bar_set_fraction(progressbar,ratio);
         }
-        if(ASCII_number==frame_number ){
+        if(ASCII_number==frameNumber ){
             return FALSE;
         }
         gtk_widget_show_all(window);
@@ -274,7 +274,7 @@ gboolean update_progressASCII(GtkProgressBar *progressbar){
 }
 
 gboolean update_progressframe_final_product(GtkProgressBar *progressbar){
-    if(frame_number !=0 && ASCII_number==frame_number ){
+    if(frameNumber !=0 && ASCII_number==frameNumber ){
         count_frame_final_product();
         if(!label_frame_final_product_added){
             GtkWidget *labelframe_final_product = gtk_label_new("Transforming ASCII into frames...");
@@ -282,12 +282,12 @@ gboolean update_progressframe_final_product(GtkProgressBar *progressbar){
             gtk_grid_attach(GTK_GRID(grid), progressbar_frame_final_product, 0, 55, 1, 1);
             label_frame_final_product_added = 1;
         }
-        double ratio = (double)frame_final_product_number/(double)frame_number ;
+        double ratio = (double)frame_final_product_number/(double)frameNumber ;
         double fraction = gtk_progress_bar_get_fraction(GTK_PROGRESS_BAR(progressbar));
         if(ratio!=fraction){
             gtk_progress_bar_set_fraction(progressbar,ratio);
         }
-        if(frame_final_product_number>=frame_number ){
+        if(frame_final_product_number>=frameNumber ){
             return FALSE;
         }
         gtk_widget_show_all(window);
